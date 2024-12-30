@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Clone repository') {
             steps {
-                script{
+                script {
                     sh 'printenv'
                     echo 'Pulling...' + env.BRANCH_NAME
                     checkout scm
@@ -16,26 +16,25 @@ pipeline {
 
         stage('Build') {
             steps {
-                script{
-                    slackSend(message: "${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)\nBuild commencé", channel: "kevmax-crm")
+                script {
+                    slackSend(message: "${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)\nBuild commencé", channel: "lawtechnology-crm")
                     if (env.BRANCH_NAME == 'master') {
-                        app = docker.build("registry.gitlab.com/kevmaxsarl/kevgest/ems/api:latest")
+                        app = docker.build("registry.gitlab.com/lawtechnology/ems/api:latest")
                     } else {
-                        app = docker.build("registry.gitlab.com/kevmaxsarl/kevgest/ems/api:"+env.BRANCH_NAME)
+                        app = docker.build("registry.gitlab.com/lawtechnology/ems/api:" + env.BRANCH_NAME)
                     }
                 }
             }
         }
-        stage('Test'){
+        stage('Test') {
             steps {
                 echo 'Empty...'
             }
         }
         stage('Deploy') {
             steps {
-                script{
-                    docker.withRegistry('https://registry.gitlab.com/kevmaxsarl/kevgest/ems/api', 'gitlab_username_password') {
-                        //app.push("${env.BUILD_NUMBER}")
+                script {
+                    docker.withRegistry('https://registry.gitlab.com/lawtechnology/ems/api', 'gitlab_username_password') {
                         if (env.BRANCH_NAME == 'master') {
                             app.push("latest")
                         } else {
@@ -49,11 +48,10 @@ pipeline {
     
     post {
         success {
-            slackSend(color: "good", message: "${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)\nBuild effectué avec succès", channel: "kevmax-crm")
+            slackSend(color: "good", message: "${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)\nBuild effectué avec succès", channel: "lawtechnology-crm")
         }
         failure {
-            slackSend(failOnError:true, message:"${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)\nÉchec de build", channel: "kevmax-crm")
+            slackSend(failOnError: true, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)\nÉchec de build", channel: "lawtechnology-crm")
         }
     }
-
 }

@@ -1,4 +1,4 @@
--- Adminer 4.8.1 PostgreSQL 16.2 (Debian 16.2-1.pgdg120+2) dump
+<!-- -- Adminer 4.8.1 PostgreSQL 16.2 (Debian 16.2-1.pgdg120+2) dump
 
 DROP TABLE IF EXISTS "alembic_version";
 CREATE TABLE "public"."alembic_version" (
@@ -168,4 +168,4 @@ ALTER TABLE ONLY "public"."sanctions" ADD CONSTRAINT "sanctions_sanctioner_uuid_
 
 ALTER TABLE ONLY "public"."users" ADD CONSTRAINT "users_role_uuid_fkey" FOREIGN KEY (role_uuid) REFERENCES roles(uuid) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE;
 
--- 2024-03-24 14:33:21.209712+00
+-- 2024-03-24 14:33:21.209712+00 -->
