@@ -34,8 +34,9 @@ def get_language():
     except Exception as e:
         logging.info(f"Failed get user language for language ContextVar: {e}")
         return Config.PREFERRED_LANGUAGE
- 
-def translate(key: str, locale: str = None):
+
+
+def __(key: str, locale: str = None):
     try:
         lang = locale or str(get_language())
 

@@ -1,23 +1,22 @@
 import re
-import os
-from random import randint, choice
 import string
 import random
+import jwt
+import bcrypt
+from datetime import timedelta, datetime
+from random import randint, choice
+from typing import Union, Any
+from fastapi import HTTPException, status
+from .config import Config
+from app.main.core.i18n import __
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-from typing import Optional
-from sqlalchemy.orm import Session
-from datetime import datetime, timedelta,timezone
-from app.main import models,crud
-import jwt
+from string import ascii_lowercase, ascii_uppercase, digits, punctuation
 
-from .config import Config
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
 ALGORITHM = "HS256"
 
 
@@ -25,45 +24,13 @@ def validate_email(email):
     email_regex = re.compile(r"[^@]+@[^@]+\.[^@]+")
     return email_regex.match(email)
 
-def authenticate_user(db:Session, email: str, password: str):
-    user:models.User = crud.user.get_user_by_email(db = db, email = email)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(Config.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, Config.SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
-def create_refresh_token(data: dict ):
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(Config.REFRESH_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, Config.SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-# def authenticate_user(fake_db, username: str, password: str):
-#     user = get_user(fake_db, username)
-#     if not user:
-#         return False
-#     if not verify_password(password, user.hashed_password):
-#         return False
-#     return user
-
-def generate_code(length=10):
+def generate_code(length=6, end=True):
     """Generate a random string of fixed length """
-
-    end = random.choice([True, False])
-
-    string_length = round(length / 3)
+    string_length = round(length / 2)
     letters = string.ascii_lowercase
     random_string = (''.join(choice(letters) for i in range(string_length))).upper()
     range_start = 10 ** ((length - string_length) - 1)
@@ -73,12 +40,27 @@ def generate_code(length=10):
         final_string = f"{random_string}{random_number}"
     else:
         final_string = f"{random_number}{random_string}"
+
     return final_string
+
+
+def create_access_token(
+        subject: Union[str, Any], expires_delta: timedelta = None
+) -> str:
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(
+            minutes=Config.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+    to_encode = {"exp": expire, "sub": str(subject)}
+    encoded_jwt = jwt.encode(to_encode, Config.SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 
 def decode_access_token(token: str):
     try:
-        decoded_token = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
+        decoded_token = jwt.decode(token, Config.SECRET_KEY, algorithms=[ALGORITHM])
         return decoded_token
     except Exception as e:
         if token:
@@ -89,42 +71,81 @@ def decode_access_token(token: str):
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
 
-
-def generate_password_reset_token(email: str) -> str:
-    delta = timedelta(hours=Config.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
-    now = datetime.utcnow()
-    expires = now + delta
-    exp = expires.timestamp()
-    encoded_jwt = jwt.encode(
-        {"exp": exp, "nbf": now, "sub": email}, Config.SECRET_KEY, algorithm="HS256",
-    )
-    return encoded_jwt
-
-
-def verify_password_reset_token(token: str) -> Optional[str]:
-    try:
-        decoded_token = jwt.decode(token, Config.SECRET_KEY, algorithms=["HS256"])
-        return decoded_token["email"]
-    except jwt.InvalidTokenError:
-        return None
-
-
-def generate_code(length=6, end=True):
-    string_length = round(length/2)
-    letters = string.ascii_lowercase
-    random_string = (''.join(choice(letters) for i in range(string_length))).upper()
-    range_start = 10**((length-string_length)-1)
-    range_end = (10**(length-string_length))-1
-    random_number =  randint(range_start, range_end)
-    if not end:
-        final_string = f"{random_string}{random_number}"
+def check_pass(password: str):
+    # 8 characters length and 1 special character
+    pattern = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+    result = re.findall(pattern, password)
+    if (len(password) < 8) or not result:
+        print("False")
+        return False
     else:
-        final_string = f"{random_number}{random_string}"
+        print("True")
+        return True
 
-    return final_string
+def generate_password(min_length=12, max_length=16):
+    """
+    Generates a random password with at least min_length characters, containing at least:
+    - 1 capital letter
+    - 1 number
+    - 1 special character
+    """
+    if min_length > max_length:
+        tmp = max_length
+        max_length = min_length
+        min_length = tmp
+    if min_length < 8: min_length = 8
+    if max_length > 16: max_length = 16
+
+    print(f"min: {min_length}")
+    print(f"max: {max_length}")
+    lowercase_letters = ascii_lowercase
+    uppercase_letters = ascii_uppercase
+    numbers = digits
+    special_characters = punctuation
+
+    # Ensure at least one character from each category
+    guaranteed_chars = random.sample(lowercase_letters, 1)  # Lowercase
+    guaranteed_chars.extend(random.sample(uppercase_letters, 1))  # Uppercase
+    guaranteed_chars.extend(random.sample(numbers, 1))  # Number
+    guaranteed_chars.extend(random.sample(special_characters, 1))  # Special
+
+    # Choose a random length between min_length and max_length (inclusive)
+    password_length = random.randint(min_length, max_length)
+
+    # Fill remaining characters with any combination
+    remaining_chars = random.sample(lowercase_letters + uppercase_letters + numbers + special_characters, password_length - 4)
+
+    # Combine all characters and shuffle for randomness
+    password = guaranteed_chars + remaining_chars
+    random.shuffle(password)
+
+    # Return the password as a string
+    return ''.join(password)
+
+
+def is_valid_password(password):
+  """
+  Checks if a password string meets the following requirements:
+    - At least 8 characters long
+    - Contains at least one lowercase letter
+    - Contains at least one uppercase letter
+    - Contains at least one number
+    # - Contains at least one special character
+  """
+  min_length = 8
+  lowercase = any(char in ascii_lowercase for char in password)
+  uppercase = any(char in ascii_uppercase for char in password)
+  number = any(char in digits for char in password)
+  # special = any(char in punctuation for char in password)
+
+  return (len(password) >= min_length and
+          lowercase and uppercase and number)
+
+
+def generate_matricule(length=12):
+    chars = string.ascii_uppercase + string.digits
+    return ''.join(random.choices(chars, k=length))

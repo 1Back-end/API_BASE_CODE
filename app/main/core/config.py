@@ -1,6 +1,6 @@
 import os
 from pydantic_settings import BaseSettings
-from typing import Optional,Dict,Any
+from typing import ClassVar, Optional,Dict,Any
 from pydantic import EmailStr, validator
 
 # from pydantic import Base EmailStr,validator
@@ -17,9 +17,9 @@ class ConfigClass(BaseSettings):
     SECRET_KEY: str = get_secret("SECRET_KEY", 'H5zMm7XtCKNsab88JQCLkaY4d8hExSjghGyaJDy12M')
     ALGORITHM: str = get_secret("ALGORITHM", 'HS256')
 
-    ADMIN_KEY: str = get_secret("ADMIN_KEY", "65a613c36558")
-    ADMIN_USERNAME: str = get_secret("ADMIN_USERNAME", "admin_b8b57106")
-    ADMIN_PASSWORD: str = get_secret("ADMIN_PASSWORD", "86zNT34Ktux8mv2Q")
+    ADMIN_KEY: str = get_secret("ADMIN_KEY", "STMKey2025")
+    ADMIN_USERNAME: str = get_secret("ADMIN_USERNAME", "stmtools")
+    ADMIN_PASSWORD: str = get_secret("ADMIN_PASSWORD", "6xP66EMBbr")
 
     # 60 minutes * 24 hours * 355 days = 365 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(get_secret("ACCESS_TOKEN_EXPIRE_MINUTES", 30 * 24 * 365))
@@ -28,7 +28,7 @@ class ConfigClass(BaseSettings):
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = get_secret("EMAIL_RESET_TOKEN_EXPIRE_HOURS", 8)
 
     # SQLALCHEMY_DATABASE_URL: str = get_secret("SQLALCHEMY_DATABASE_URL", 'postgresql://base_api_v2:Lcy96xP66EMBbrrr@dbe.comii.de:6020/sanctions_db_dev')
-    SQLALCHEMY_DATABASE_URL: str = get_secret("SQLALCHEMY_DATABASE_URL", 'postgresql://postgres:2002@localhost:5432/sanctions_database')
+    SQLALCHEMY_DATABASE_URL: str = get_secret("SQLALCHEMY_DATABASE_URL", 'postgresql://postgres:2002@localhost:5432/student_course_absence_db')
 
     SQLALCHEMY_POOL_SIZE: int = 100
     SQLALCHEMY_MAX_OVERFLOW: int = 0
@@ -39,19 +39,26 @@ class ConfigClass(BaseSettings):
         "pool_recycle": SQLALCHEMY_POOL_RECYCLE,
     }
 
-    # MINIO_URL: Optional[str] = get_secret("MINIO_URL", "files.comii.de")
-    # MINIO_KEY: Optional[str] = get_secret("MINIO_ACCESS_KEY", "Wl0jshEzbP5+Q7KXpLpLRRqwiOPwcBEskc5s6slfyBo=")
-    # MINIO_SECRET: Optional[str] = get_secret("MINIO_SECRET_KEY",
-    #                                          "jDe6SMqcANAkflmmfCFyfGXN7r9AE2oKXpD0n0LRRqZfHoskT/4pOht"
-    #                                          "+n1jjogmfCFyfGXD0n0N7r9AEDa0kpxfiw==")
-    # MINIO_BUCKET: str = get_secret("MINIO_BUCKET", "develop")
-    # MINIO_SECURE: bool = True
+    CLOUDINARY_CLOUD_NAME:str = get_secret("CLOUDINARY_NAME","do8fpzhen")
+    CLOUDINARY_API_KEY:str = get_secret("CLOUDINARY_API_KEY","839879112629286")
+    CLOUDINARY_API_SECRET:str = get_secret("CLOUDINARY_API_SECRET","jSQC_LoynIqEqDd81fJY1gTATVI")
+    CLOUDINARY_API_SECURE:bool = get_secret("CLOUDINARY_API_SECURE", True)
+    IMAGE_MEDIUM_WIDTH: int = get_secret("IMAGE_MEDIUM_WIDTH", 600)
+    IMAGE_THUMBNAIL_WIDTH: int = get_secret("IMAGE_THUMBNAIL_WIDTH", 300)
+    UPLOADED_FILE_DEST: str = get_secret("UPLOADED_FILE_DEST", "uploads")
+
+
+    MAILTRAP_USERNAME :str = get_secret("MAILTRAP_USERNAME", "987982cf606b48")
+    MAILTRAP_PASSWORD :str = get_secret("MAILTRAP_PASSWORD", "c08cbffad8f6c7")
+    MAILTRAP_HOST: ClassVar[str] = "smtp.mailtrap.io"  # Utilisation de ClassVar
+    MAILTRAP_PORT: ClassVar[int] = 587  # Utilisation de ClassVar
+    EMAILS_FROM_CLOUDINARY: str = get_secret("EMAILS_FROM_CLOUDINARY", "laurentalphonsewilfried@gmail.com")
 
     PREFERRED_LANGUAGE: str = get_secret("PREFERRED_LANGUAGE", 'fr')
 
     API_V1_STR: str = get_secret("API_V1_STR", "/api/v1")
 
-    PROJECT_NAME: str = get_secret("PROJECT_NAME", "BASE API")
+    PROJECT_NAME: str = get_secret("PROJECT_NAME", "UNIVERSITY GRADES MANAGEMENT SYSTEM")
     PROJECT_VERSION: str = get_secret("PROJECT_VERSION", "0.0.1")
 
     # Redis config
@@ -88,11 +95,11 @@ class ConfigClass(BaseSettings):
             and values.get("EMAILS_FROM_EMAIL")
         )
 
-    EMAIL_TEST_USER: EmailStr = get_secret("EMAIL_TEST_USER", "lawtechnology@gmail.com")
-    FIRST_SUPERUSER: EmailStr = get_secret("FIRST_SUPERUSER", "admin@lawtechnology.com")
-    FIRST_SUPERUSER_PASSWORD: str = get_secret("FIRST_SUPERUSER_PASSWORD", "SecurePassword123!")
-    FIRST_SUPERUSER_FIRST_NAME: str = get_secret("FIRST_SUPERUSER_FIRST_NAME", "Law")
-    FIRST_SUPERUSER_LASTNAME: str = get_secret("FIRST_SUPERUSER_LASTNAME", "Technology")
+    EMAIL_TEST_USER: EmailStr = get_secret("EMAIL_TEST_USER","support@kevmax.com")
+    FIRST_SUPERUSER: EmailStr = get_secret("FIRST_SUPERUSER","test@test.com")
+    FIRST_SUPERUSER_PASSWORD: str = get_secret("FIRST_SUPERUSER_PASSWORD","test")
+    FIRST_SUPERUSER_FIRST_NAME: str = get_secret("FIRST_SUPERUSER_FIRST_NAME","test")
+    FIRST_SUPERUSER_LASTNAME: str = get_secret("FIRST_SUPERUSER_LASTNAME","test")
     USERS_OPEN_REGISTRATION: bool = get_secret("USERS_OPEN_REGISTRATION", False) in ["True", True]
 
     LOCAL: bool = os.getenv("LOCAL", True)
