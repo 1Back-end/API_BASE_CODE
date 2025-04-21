@@ -68,12 +68,12 @@ class User(Base):
     first_name = Column(String, nullable=False)  # First name
     last_name = Column(String, nullable=False)  # Last name
     password_hash = Column(String, nullable=False)  # Hashed password
-    role = Column(String, nullable=False, default="ADMIN")  # User role
+    role = Column(String, nullable=False, default=UserRole.ADMIN)  # User role
     otp = Column(String(5), nullable=True, default="")  # Temporary OTP code
     otp_expired_at = Column(DateTime, nullable=True, default=None)  # OTP expiration date
     otp_password = Column(String(5), nullable=True, default="")  # OTP password
     otp_password_expired_at = Column(DateTime, nullable=True, default=None)  # OTP password expiration date
-    status = Column(String, nullable=False, default="ACTIVED")  # User status
+    status = Column(String, nullable=False, default=UserStatus.ACTIVED)  # User status
     created_at = Column(DateTime, default=func.now())  # Account creation timestamp
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())  # Last update timestamp
     is_deleted = Column(Boolean, default=False)  # Soft delete flag

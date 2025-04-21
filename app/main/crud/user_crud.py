@@ -16,7 +16,7 @@ class CRUDUser(CRUDBase[models.User, schemas.UserCreate, schemas.UserUpdate]):
 
     @classmethod
     def get_by_phone_number(cls, db: Session, *, phone_number: str) -> Union[models.User, None]:
-        return db.query(models.User).filter(models.User.full_phone_number == phone_number).first()
+        return db.query(models.User).filter(models.User.phone_number == phone_number).first()
 
     @classmethod
     def get_by_email(cls, db: Session, *, email: str) -> Union[models.User, None]:

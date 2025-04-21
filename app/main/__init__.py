@@ -27,9 +27,11 @@ security = HTTPBasic()
 protocol = HTTPBearer(auto_error=False, scheme_name="Bearer")
 
 description = '''
-    This is EMS API. All request in regards to the application can be found here,
-    in general most of the methods require you being as an active user to be able to access.
+    This is the AI RECRUITMENT API. All requests related to the recruitment system can be found here.
+    Most endpoints require authentication as an active user. This API leverages Artificial Intelligence
+    to streamline hiring workflows, match candidates with job offers, analyze resumes, and automate scoring.
 '''
+
 
 app = FastAPI(
     title=Config.PROJECT_NAME,

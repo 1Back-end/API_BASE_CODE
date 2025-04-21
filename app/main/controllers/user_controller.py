@@ -22,7 +22,7 @@ def register(
 ):
     exist_phone = crud.user.get_by_phone_number(db=db, phone_number=f"{obj_in.country_code}{obj_in.phone_number}")
     if exist_phone:
-        raise HTTPException(status_code=409, detail=__(key="phone_number-already-used"))
+        raise HTTPException(status_code=409, detail=__(key="phone-number-already-used"))
 
     exist_email = crud.user.get_by_email(db=db, email=obj_in.email)
     if exist_email:

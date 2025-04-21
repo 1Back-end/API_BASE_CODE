@@ -22,6 +22,9 @@ class UserBase(BaseModel):
     login:Optional[str]=None
     model_config = ConfigDict(from_attributes=True)
 
+class UserCreate(UserBase):
+    pass
+
 class UserResponseInfo(BaseModel):
     email:EmailStr
     country_code:str
@@ -35,8 +38,7 @@ class UserResponseInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserCreate(UserBase):
-    pass
+
 
 class UserUpdate(BaseModel):
     uuid:str
