@@ -28,7 +28,7 @@ class ConfigClass(BaseSettings):
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = get_secret("EMAIL_RESET_TOKEN_EXPIRE_HOURS", 8)
 
     # SQLALCHEMY_DATABASE_URL: str = get_secret("SQLALCHEMY_DATABASE_URL", 'postgresql://base_api_v2:Lcy96xP66EMBbrrr@dbe.comii.de:6020/sanctions_db_dev')
-    SQLALCHEMY_DATABASE_URL: str = get_secret("SQLALCHEMY_DATABASE_URL", 'postgresql://postgres:2002@localhost:5432/student_course_absence_db')
+    SQLALCHEMY_DATABASE_URL: str = get_secret("SQLALCHEMY_DATABASE_URL", 'postgresql://postgres:2003@localhost:5432/api_recruitment_ia')
 
     SQLALCHEMY_POOL_SIZE: int = 100
     SQLALCHEMY_MAX_OVERFLOW: int = 0

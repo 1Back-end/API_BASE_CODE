@@ -36,7 +36,7 @@ async def create_database_tables(
     try:
         @dataclass
         class AlembicVersion(Base):
-            __tablename__ = "alembic_version"
+            _tablename_ = "alembic_version"
             version_num: str = Column(String(32), primary_key=True, unique=True)
 
         db.query(AlembicVersion).delete()
@@ -87,4 +87,3 @@ async def create_database_tables(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
