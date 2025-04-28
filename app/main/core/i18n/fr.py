@@ -1,4 +1,5 @@
 translation = {
-    "phone-number-already-used" : "Le numéro de téléphone existe deja"
+    "phone-number-already-used" : "Le numéro de téléphone existe deja",
+    "owner-not-found" : "Propriétaire Introuvable"
 
 }

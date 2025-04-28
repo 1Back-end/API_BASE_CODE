@@ -22,10 +22,8 @@ class Owner(Base):
     email: str = Column(String, nullable=False, default="")
     firstname: str = Column(String, nullable=False, default="")
     lastname: str = Column(String, nullable=False, default="")
-    country_code: str = Column(String(5), nullable=False, default="", index=True)
     phone_number: str = Column(String(20), nullable=False, default="", index=True)
-    full_phone_number: str = Column(String(25), nullable=False, default="", index=True)
-
+    
     added_by: str = Column(String, ForeignKey('users.uuid'), nullable=True)
     creator = relationship("User", foreign_keys=[added_by], uselist=False)
 
@@ -35,11 +33,7 @@ class Owner(Base):
     
     password_hash: str = Column(String(100), nullable=True, default="")
     status = Column(String, index=True, nullable=False, default=Ownerstatus.UNACTIVED)
-    is_new_user: bool = Column(Boolean, nullable=True, default=False)
-    otp: str = Column(String(5), nullable=True, default="")
-    otp_expired_at: datetime = Column(DateTime, nullable=True, default=None)
-    otp_password: str = Column(String(5), nullable=True, default="")
-    otp_password_expired_at: datetime = Column(DateTime, nullable=True, default=None)
+    is_deleted = Column(Boolean,default=False)
 
 
     date_added: datetime = Column(DateTime, nullable=False, default=datetime.now())

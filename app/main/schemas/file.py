@@ -16,6 +16,15 @@ class FileResize(BaseModel):
 class FileAdd(BaseModel):
     base_64: Any
 
+class FileSlim(BaseModel):
+    uuid:str
+    file_name: str
+    url: str
+    format: Optional[str]
+    model_config = ConfigDict(from_attributes=True)
+
+
+
 class File(BaseModel):
     uuid:str
     file_name: str

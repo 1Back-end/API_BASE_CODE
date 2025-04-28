@@ -1,35 +1,63 @@
-from dataclasses import dataclass
-from sqlalchemy.sql import func
-from datetime import datetime
-from sqlalchemy import Column, String, Text, DateTime, Boolean,Integer
-from app.main.models.db.base_class import Base
-from enum import Enum 
+from dataclasses import dataclass   
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Text, Table, Boolean,types,event, Enum
+from datetime import datetime, date
+from sqlalchemy.orm import relationship
+from .db.base_class import Base
+from sqlalchemy.dialects.postgresql import ENUM
+from enum import Enum
 
 
-# Enum pour le statut de l'offre
-class companiesStatut(str,Enum):
-    active = "active"
-    closed = "closed"
-    expired = "expired"
+class CompanyStatus(str,Enum):
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+    CLOSED = "CLOSED"
 
-class companies(Base):
+class CompanyType(str,Enum):
+    PERSONNAL = "PERSONNAL",
+    SARL = "SARL"
+    SA = "SA"
+    SAS = "SAS"
+    ONG = "ONG"
+    
+
+class Company(Base):
     __tablename__ = "companies"
 
-    uuid = Column(String, primary_key=True)  # Identifiant unique (UUID)
-    name = Column(String, nullable=False)  # nom de l'entreprise
-    description = Column(Text, nullable=False)  # Description détaillée
-    industry = Column(String,nullable=False)  #  secteur d'activite 
-    email = Column(String, unique=True, nullable=False)
-    code_country = Column(String, nullable=False)
-    phone_number = Column(String, nullable=False)
-    full_phone_number = Column(String, unique=True, nullable=False)
-    address = Column(String, nullable=True)  # Adresse du candidat
-    website_url = Column(String,nullable=True )
-    logo_url = Column(String, unique=True,nullable=True)
-    status = Column(String,nullable=False, default=companiesStatut.active)  # Statut de l'entreprise (enum)
-    is_deleted = Column(Boolean,default=False)
+    uuid = Column(String,primary_key=True,index=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False,unique=True)
+    phone = Column(String, nullable=False, unique=True)
+    description = Column(Text, nullable=True)
+    slogan = Column(String, nullable=True)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
+    address_uuid = Column(String, ForeignKey('addresses.uuid'), nullable=True)
+    address = relationship("Address",foreign_keys=[address_uuid])
     
+    logo_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
+    logo = relationship("Storage", foreign_keys=[logo_uuid])
+
+    signature_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
+    signature = relationship("Storage", foreign_keys=[signature_uuid])
+
+    stamp_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
+    stamp = relationship("Storage", foreign_keys=[stamp_uuid])
+
+    founded_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    employee_count = Column(Integer, default=0)
+    type = Column(String, nullable=False,default=CompanyType.PERSONNAL)
+    status = Column(String,nullable=False, default=CompanyStatus.INACTIVE)
+
+    website = Column(String, nullable=True)
+
+    added_by = Column(String, ForeignKey("owners.uuid"), nullable=False)  # Référence au propriétaire
+    owner = relationship("Owner", foreign_keys=[added_by])
+
+    is_deleted = Column(Boolean, default=False)
+
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+    def __repr__(self):
+        return f"Company(name='{self.name}', email='{self.email}', phone='{self.phone}', status='{self.status}', type='{self.type}', added_by='{self.added_by}')"

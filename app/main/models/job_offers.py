@@ -52,6 +52,4 @@ class JobOffer(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
 
-    def __repr__(self):
-        return f"<JobOffer(job_id={self.job_id}, title={self.title})>"
-
+    
