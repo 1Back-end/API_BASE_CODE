@@ -1,43 +1,55 @@
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
-from app.main.schemas import UserAuthentication, File, DataList
-from app.main.schemas.file import FileSlim
-from app.main.schemas.user import AddedBy
 
-class Adress(BaseModel):
-    uuid: Optional[str] = None
+
+class AddressSlim(BaseModel):
     street: str
-    city: Optional[str]
-    state: str
+    city: str
+    state: Optional[str] = None
     zipcode: str
-    country: Optional[FileSlim]
-    apartment_number: Optional[AddedBy]
-    additional_information: datetime
+    country: str
+    apartment_number: Optional[str] = None
+    additional_information: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AddressBase(BaseModel):
+    street: str
+    city: str
+    state: Optional[str] = None
+    zipcode: str
+    country: str
+    apartment_number: Optional[str] = None
+    additional_information: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Address(AddressBase):
+    uuid: str
     date_added: datetime
     date_modified: datetime
+    model_config = ConfigDict(from_attributes=True)
 
-    class AddressSchemaBase(BaseModel):
-        street: str 
-        city:str 
-        state: str 
-        zipcode: str 
-        country: str 
-        apartment_information: Optional[str]
+class AddressInfo(BaseModel):
+    uuid: str
 
-class OwnerCreate(OwnerSchemaBase):
+class AddressCreate(AddressBase):
     pass
 
-class AdressSchemaUpdate(BaseModel):
-    uuid:str
-    street:str = None
-    city :str = None
-    state:str = None
-    zip_code:str = None
-    country:str = None
-    apart_number:str = None
+    model_config = ConfigDict(from_attributes=True)
 
-class OwnerSchemaDelete(BaseModel):
-    uuid:str
 
+class AddressUpdate(BaseModel):
+    uuid:str
+    street: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zipcode: Optional[str] = None
+    country: Optional[str] = None
+    apartment_number: Optional[str] = None
+    additional_information: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
 

@@ -1,104 +1,66 @@
+from datetime import datetime, timedelta
 import math
-import bcrypt
+from typing import Union, Optional, List
 from fastapi import HTTPException
+from pydantic import EmailStr
 from sqlalchemy import or_
-import re
-from typing import List, Optional, Union
-import uuid
-from app.main.core.i18n import __
-from app.main.core.security import generate_password, get_password_hash,verify_password
-from sqlalchemy.orm import Session
+from app.main.core.i18n import __, get_language
+from app.main.core.mail import send_account_owner_creation
 from app.main.crud.base import CRUDBase
-from app.main import models,schemas
+from sqlalchemy.orm import Session,joinedload
+from app.main import schemas, models,crud
+import uuid
+from app.main.core.security import get_password_hash, verify_password, generate_password
 
 
-class CRUDOwner(CRUDBase[models.Owner,schemas.OwnerCreate,schemas.OwnerSchemaUpdate]):
+class CRUDOwner(CRUDBase[models.Owner, schemas.OwnerCreate,schemas.OwnerUpdate]):
 
     @classmethod
-    def get_by_email(cls,db:Session,*,email:str):
-        return db.query(models.Owner).filter(models.Owner.email==email,models.Owner.is_deleted==False).first()
+    def get_by_email(cls, db: Session, *, email: EmailStr) -> Optional[models.Owner]:
+        return db.query(models.Owner).filter(models.Owner.email == email).first()
     
     @classmethod
-    def get_by_uuid(cls,db:Session,*,uuid:str):
-        return db.query(models.Owner).filter(models.Owner.uuid==uuid,models.Owner.is_deleted==False).first()
-    
-
-    @classmethod
-    def get_by_phone_number(cls,db:Session,*,phone_number:str):
-        return db.query(models.Owner).filter(models.Owner.phone_number==phone_number,models.Owner.is_deleted==False).first()
+    def get_by_uuid(cls, db: Session, *, uuid:str):
+        return db.query(models.Owner).filter(models.Owner.uuid == uuid).first()
     
     @classmethod
-    def create(cls,db:Session,*,obj_in:schemas.OwnerCreate,added_by:str):
-        password :str = generate_password(8,8)
-        print(f"User password {password}")
-        common_uuid = str(uuid.uuid4())
-        db_obj = models.Owner(
-            uuid = common_uuid,
+    def create(cls, db: Session, *, obj_in: schemas.OwnerCreate,added_by_uuid:str):
+        password: str = generate_password(8, 8)
+        print(f"Owner password: {password}")
+        owner = models.Owner(
+            uuid= str(uuid.uuid4()),
+            email = obj_in.email,
+            full_phone_number=f"{obj_in.country_code}{obj_in.phone_number}",
+            country_code=obj_in.country_code,
+            phone_number=obj_in.phone_number,
             firstname = obj_in.firstname,
             lastname = obj_in.lastname,
-            email = obj_in.email,
+            password_hash = get_password_hash(password),
             avatar_uuid = obj_in.avatar_uuid if obj_in.avatar_uuid else None,
-            password_hash = get_password_hash(password),
-            added_by=added_by,
-            status = models.Ownerstatus.UNACTIVED
-
+            added_by_uuid = added_by_uuid,
         )
-        db.add()
+        db.add(owner)
         db.commit()
-        db.refresh(db_obj)
-
-        new_user = models.User(
-            uuid = common_uuid,
-            email = obj_in.email,
-            first_name = obj_in.firstname,
-            last_name = obj_in.lastname,
-            phone_number = obj_in.phone_number,
-            role = models.UserRole.OWNER,
-            password_hash = get_password_hash(password),
-        )
-        db.add()
-        db.commit()
-        db.refresh(new_user)
-        return db_obj
+        db.refresh(owner)
+        send_account_owner_creation(email_to=obj_in.email,firstname=obj_in.firstname,
+                                    password=password)
+        return owner
     
     @classmethod
-    def update(cls,db:Session,*,obj_in:schemas.OwnerSchemaUpdate,added_by:str):
-        db_obj = cls.get_by_uuid(db=db,uuid=obj_in.uuid)
-        if not db_obj:
+    def update(cls,db:Session,*,obj_in:schemas.OwnerUpdate,added_by_uuid:str):
+        owner = cls.get_by_uuid(db=db,uuid=obj_in.uuid)
+        if owner is None:
             raise HTTPException(status_code=404,detail=__(key="owner-not-found"))
-        db_obj.firstname = obj_in.firstname if obj_in.firstname else db_obj.firstname
-        db_obj.lastname = obj_in.lastname if obj_in.lastname else db_obj.lastname
-        db_obj.email = obj_in.email if obj_in.email else db_obj.email
-        db_obj.phone_number = obj_in.phone_number if obj_in.phone_number else db_obj.phone_number
-        db_obj.avatar_uuid = obj_in.avatar_uuid if obj_in.avatar_uuid else db_obj.avatar_uuid
-        added_by=added_by
+        owner.email = obj_in.email if obj_in.email else owner.email
+        owner.firstname = obj_in.firstname if obj_in.firstname else owner.firstname
+        owner.lastname = obj_in.lastname if obj_in.lastname else owner.lastname
+        owner.avatar_uuid = obj_in.avatar_uuid if obj_in.avatar_uuid else owner.avatar_uuid
+        owner.phone_number = obj_in.phone_number if obj_in.phone_number else owner.phone_number
+        owner.country_code = obj_in.country_code if obj_in.country_code else owner.country_code
+        db.flush()
         db.commit()
-        db.refresh(db_obj)
-        return db_obj
-    
-    @classmethod
-    def soft_delete(cls,db:Session,uuid:str):
-        db_obj = cls.get_by_uuid(db=db,uuid=uuid)
-        if not db_obj:
-            raise HTTPException(status_code=404,detail=__(key="owner-not-found"))
-        db_obj.is_deleted==True
-        db.commit()
-
-    @classmethod
-    def delete(cls,db:Session,uuid:str):
-        db_obj = cls.get_by_uuid(db=db,uuid=uuid)
-        if not db_obj:
-            raise HTTPException(status_code=404,detail=__(key="owner-not-found"))
-        db.delete(db_obj)
-        db.commit()
-
-    @classmethod
-    def update_status(cls,db:Session,uuid:str,status:str):
-        db_obj = cls.get_by_uuid(db=db,uuid=uuid)
-        if not db_obj:
-            raise HTTPException(status_code=404,detail=__(key="owner-not-found"))
-        db_obj.status = status
-        db.commit()
+        db.refresh(owner)
+        return owner
     
 
     @classmethod
@@ -140,7 +102,37 @@ class CRUDOwner(CRUDBase[models.Owner,schemas.OwnerCreate,schemas.OwnerSchemaUpd
             current_page =page,
             data =record_query
         )
+    @classmethod
+    def update_status(cls, db: Session, uuid:str,status:str) -> models.Owner:
+        owner = cls.get_by_uuid(db=db,uuid=uuid)
+        if not owner:
+         raise HTTPException(status_code=404, detail=__("owner-not-found"))
+        owner.status = status
+        db.commit()
+        return owner
+    @classmethod
+    def soft_delete(cls,db:Session,uuid:str):
+        owner = cls.get_by_uuid(db=db,uuid=uuid)
+        if not owner:
+         raise HTTPException(status_code=404, detail=__("owner-not-found"))
+        owner.status =  models.Ownerstatus.DELETED
+        db.commit()
 
+    @classmethod
+    def authenticate(cls, db: Session, *, email: str, password: str) -> Optional[models.Owner]:
+        db_obj: models.Owner = db.query(models.Owner).filter(models.Owner.email == email).first()
+        if not db_obj:
+            return None
+        if not verify_password(password, db_obj.password_hash):
+            return None
+        return db_obj
+    
+    def is_active(self, owner: models.Owner) -> bool:
+        return owner.status == models.Ownerstatus.ACTIVED
 
+        
+
+  
+owner = CRUDOwner(models.Owner)
 
 

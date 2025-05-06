@@ -6,3 +6,4 @@ from .user import *
 from .file import *
 from .owner import *
 from .adress import * 
+from .companies import *
