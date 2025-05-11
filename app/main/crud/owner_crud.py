@@ -20,30 +20,40 @@ class CRUDOwner(CRUDBase[models.Owner, schemas.OwnerCreate,schemas.OwnerUpdate])
         return db.query(models.Owner).filter(models.Owner.email == email).first()
     
     @classmethod
+    def get_by_phone_number(cls, db: Session, *, phone_number: EmailStr) -> Optional[models.Owner]:
+        return db.query(models.Owner).filter(models.Owner.phone_number == phone_number).first()
+    
+    @classmethod
     def get_by_uuid(cls, db: Session, *, uuid:str):
         return db.query(models.Owner).filter(models.Owner.uuid == uuid).first()
     
     @classmethod
-    def create(cls, db: Session, *, obj_in: schemas.OwnerCreate,added_by_uuid:str):
-        password: str = generate_password(8, 8)
-        print(f"Owner password: {password}")
+    def create(cls, db: Session, *, obj_in: schemas.OwnerCreate):
+        commond_uuid = str(uuid.uuid4())
         owner = models.Owner(
-            uuid= str(uuid.uuid4()),
+            uuid= commond_uuid,
             email = obj_in.email,
-            full_phone_number=f"{obj_in.country_code}{obj_in.phone_number}",
-            country_code=obj_in.country_code,
             phone_number=obj_in.phone_number,
             firstname = obj_in.firstname,
             lastname = obj_in.lastname,
-            password_hash = get_password_hash(password),
-            avatar_uuid = obj_in.avatar_uuid if obj_in.avatar_uuid else None,
-            added_by_uuid = added_by_uuid,
+            password_hash = get_password_hash(obj_in.password_hash),
+            avatar_uuid = obj_in.avatar_uuid,
         )
         db.add(owner)
         db.commit()
         db.refresh(owner)
-        send_account_owner_creation(email_to=obj_in.email,firstname=obj_in.firstname,
-                                    password=password)
+        new_owner = models.User(
+            uuid = commond_uuid,
+            email = obj_in.email,
+            first_name= obj_in.firstname,
+            last_name = obj_in.lastname,
+            phone_number=obj_in.phone_number,
+            password_hash = get_password_hash(obj_in.password_hash),
+            role = models.UserRole.OWNER
+        )
+        db.add(new_owner)
+        db.commit()
+        db.refresh(new_owner)
         return owner
     
     @classmethod

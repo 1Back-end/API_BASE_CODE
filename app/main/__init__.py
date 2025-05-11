@@ -18,6 +18,7 @@ from app.main.controllers.router import api_router
 from app.main.core.config import Config
 from app.main.core.i18n import add_process_language_header
 # from app.main.core.security import decode_access_token
+from app.main.core.security import decode_access_token
 from app.main.models.db.session import SessionLocal
 from app.main.schedulers import scheduler
 

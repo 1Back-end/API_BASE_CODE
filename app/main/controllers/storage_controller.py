@@ -22,7 +22,6 @@ async def upload_file(
         *,
         db: Session = Depends(get_db),
         file: UploadFile = File(...),
-        current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
         
 ):
     """
@@ -69,7 +68,6 @@ def get_file(
     *,
     public_id: str, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
     # current_user: models.User = Depends(dependencies.TokenRequired())
 
     ):
@@ -100,8 +98,6 @@ def get_file(
     *,
     public_id: str, 
     db: Session = Depends(get_db),
-    # current_user: models.User = Depends(dependencies.TokenRequired())
-    current_user: models.User = Depends(TokenRequired())
 
     ):
     """
@@ -136,7 +132,6 @@ def get_files_from_db(
     # date_added: Optional[date] = None,  # to filter by date_added in the range (start_date, end_date)
     document_type:Optional[str]=None,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
     
     ):
 

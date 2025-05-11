@@ -5,19 +5,18 @@ from app.main.core.i18n import __
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional
+from app.main.core.security import is_valid_password
 router = APIRouter(prefix="/owners", tags=["owners"])
 
-@router.post("/create", response_model=schemas.Owner, status_code=201)
+@router.post("/create", response_model=schemas.Msg, status_code=201)
 def create(
     *,
     db: Session = Depends(get_db),
     obj_in: schemas.OwnerCreate,
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
     """
     Create owner
     """
-    added_by_uuid= current_user.uuid
     owner = crud.owner.get_by_email(db=db,email=obj_in.email)
     if owner:
         raise HTTPException(status_code=409, detail=__(key="owner-email-taken"))
@@ -25,8 +24,17 @@ def create(
         avatar = crud.storage_crud.get_file_by_uuid(db=db,file_uuid=obj_in.avatar_uuid)
         if not avatar:
             raise HTTPException(status_code=404, detail=__(key="avatar-not-found"))
+        
+    exist_phone_number = crud.owner.get_by_phone_number(db=db,phone_number=obj_in.phone_number)
+    if exist_phone_number:
+        raise HTTPException(status_code=409,detail=__(key="phone-number-already-exist"))
+    
+    if not is_valid_password(obj_in.password_hash):
+        raise HTTPException(status_code=400,detail=__(key="invalid-password"))
 
-    return crud.owner.create(db=db, obj_in=obj_in,added_by_uuid=added_by_uuid)
+    crud.owner.create(db=db, obj_in=obj_in)
+    return {"message": __(key="account-created-successfully")}
+
 
 
 @router.put("/update",response_model=schemas.Owner,status_code=201)

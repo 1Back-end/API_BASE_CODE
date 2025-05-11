@@ -10,10 +10,7 @@ class Owner(BaseModel):
     firstname: Optional[str]
     lastname: str
     status: str
-    full_phone_number: Optional[str]
-    is_new_user: Optional[bool] = False
     avatar: Optional[File]
-    added_by: Optional[AddedBy]
     date_added: datetime
     date_modified: datetime
 
@@ -37,7 +34,6 @@ class OwnerResponse(BaseModel):
     full_phone_number: Optional[str]
     is_new_user: Optional[bool] = False
     avatar: Optional[File]
-    added_by: Optional[AddedBy]
     date_added: datetime
     date_modified: datetime
 
@@ -48,8 +44,8 @@ class OwnerSchemaBase(BaseModel):
     firstname: Optional[str] = None
     lastname: str
     avatar_uuid: Optional[str] = None
-    country_code:str
     phone_number: Optional[str] = None
+    password_hash:str
 
 
 class OwnerCreate(OwnerSchemaBase):

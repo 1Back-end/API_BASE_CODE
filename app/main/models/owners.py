@@ -24,9 +24,6 @@ class Owner(Base):
     lastname: str = Column(String, nullable=False, default="")
     phone_number: str = Column(String(20), nullable=False, default="", index=True)
     
-    added_by: str = Column(String, ForeignKey('users.uuid'), nullable=True)
-    creator = relationship("User", foreign_keys=[added_by], uselist=False)
-
     avatar_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
     avatar = relationship("Storage", foreign_keys=[avatar_uuid], uselist=False)
     
