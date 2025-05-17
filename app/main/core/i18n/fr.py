@@ -21,7 +21,40 @@ translation = {
     "cv-not-found" : "CV introuvable",
     "company-not-found" : "Compagnie introuvable",
     "not-authorized" : "Non autorisé",
-    "offer-status-updated-successfully" : "Statut de l'offre mis à jour avec succès",
+    "offers-not-found": "Offre introuvable",
+    "offer-status-updated-successfully": "Statut de l'offre mis à jour avec succès",
+    "offer-deleted-successfully": "Offre supprimée avec succès",
+    "cover-letter-not-found" : "Lettre de motivation Introuvable",
+    "application-not-found" : "Candidature Introuvable",
+    "offer-applied-successfully" : "offre postulée avec succès",
+    "application-status-update-successfully":"mise à jour du statut de la candidature avec succès",
+    "no-applications-found-for-this-job offer":"Aucune candidature trouvée pour cette offre d'emploi",
+    "shortlisted-candidates-found": "Des candidats retenus ont été trouvés",
+    "rejected-candidates-found": "Des candidats rejetés ont été trouvés",
+    "candidate-already-applied" :"Le candidat a déjà postulé",
+    "offer-expired" : "L'offre a expiré",
+    "application-deleted-successfully" : "Candidature supprimée avec succès",
+    "profile-created-successfully" : "Profil crée avec succès",
+    "company-deleted-successfully" : "L'entreprise supprimée avce succès",
+    "company-status-updated-successfully" : "Statut de l'entreprise modifié avec succès",
+    "offer-created-successfully" : "Offre crée avec succès",
+    "offer-updated-successfully" : "Offre modifiée avec succès",
+    "Invalid-access-key" : "Clé d'accès invalide",
+    "Owner-email-taken" : "Email du propriétaire  déjà utilisé",
+    "account-created-successfully" : "Compte crée avec succès",
+    "owner-deleted" : "Propriétaire supprimé",
+    "document-deleted-successfully" : "Document supprimé avec succès",
+    "File-not-found" : "Fichier introuvable",
+    "user-created-successfully" : "Utilisateur crée avec succès",
+    "user-deleted-successfully" : "Utilisateur supprimé avec succès",
+    "user-status-updated-successfully" : "Statut de l'utilisateur modifié avec succès",
+
+
+
+
+
+
+
 
 
 

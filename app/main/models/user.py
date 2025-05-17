@@ -20,6 +20,7 @@ class UserRole(str, Enum):
     EDIMESTRE = "EDIMESTRE"
     SUPER_ADMIN = "SUPER_ADMIN"
     OWNER = "OWNER"
+    CANDIDAT = "CANDIDAT"
 
 
 class UserStatus(str, Enum):

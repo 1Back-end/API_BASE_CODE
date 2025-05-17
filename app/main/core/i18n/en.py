@@ -21,8 +21,38 @@ translation = {
     "cv-not-found" : "CV not found",
     "company-not-found" : "Company not found",
     "not-authorized" : "Not authorized",
-    "offer-status-updated-successfully" :"Offer status updated successfully",
-    "offer-delete-successfully" : ""  
+    "offer-not-found": "Offer not found",
+    "offer-status-updated-successfully": "Offer status updated successfully",
+    "offer-deleted-successfully": "Offer deleted successfully",
+    "cover-letter-not-found" : "Cover letter not found",
+    "application-not-found" :"Application not found",
+    "offer-applied-successfully" : "Offer applied successfully",
+    "application-status-update-successfully" : "Application status updated successfully",
+    "no-applications-found-for-this-job offer" : "No applications found for this job offer",
+    "shortlisted-candidates-found": "Shortlisted candidates found",
+    "rejected-candidates-found": "Rejected candidates found",
+    "candidate-already-applied" : "The candidate has already applied",
+    "offer-expired" :"The offer has expired",
+    "application-deleted-successfully" : "Application deleted successfully",
+    "profile-created-successfully" : "Profile created successfully",
+    "company-deleted-successfully" : "Company deleted successfully",
+    "company-status-updated-successfully" : "Company status updated successfully",
+    "offer-created-successfully" : "Offer created successfully",
+    "offer-updated-successfully" : "Offer updated successfully",
+    "Invalid-access-key" : "Invalid access key",
+    "Owner-email-taken" : "Owner email already taken",
+    "account-created-successfully" : "Account created successfully",
+    "owner-deleted" : "Owner deleted",
+    "document-deleted-successfully" : "Document deleted successfully",
+    "File-not-found" : "File not found",
+    "user-created-successfully" : "User created sucessfully",
+    "user-deleted-successfully" : "User deleted succesfully",
+    "user-status-updated-successfully" : "User status updated sucessfully",
+
+
+
+
+     
     
     
      

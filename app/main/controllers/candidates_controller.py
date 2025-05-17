@@ -42,7 +42,7 @@ async def login(
 
 
 
-@router.post("/create", response_model=schemas.Candidate)
+@router.post("/create", response_model=schemas.Msg)
 def create_candidate(
     candidate: schemas.CandidateCreate, 
     db: Session = Depends(get_db)
@@ -59,13 +59,9 @@ def create_candidate(
         avatar = crud.storage_crud.get_file_by_uuid(db=db,file_uuid=candidate.avatar_uuid)
         if not avatar:
             raise HTTPException(status_code=404, detail=__(key="avatar-not-found"))
-    if candidate.cv_uuid:
-        cv = crud.storage_crud.get_file_by_uuid(db=db,file_uuid=candidate.cv_uuid)
-        if not cv:
-            raise HTTPException(status_code=404, detail=__(key="cv-not-found"))
-        
     # Appel au CRUD pour créer un candidat et ses expériences
-    return crud.candidate.create(db=db,candidate=candidate)
+    crud.candidate.create(db=db,candidate=candidate)
+    return schemas.Msg(message=__(key="profile-created-successfully"))
     
 
 @router.get("/get_many", response_model=None)
@@ -77,7 +73,7 @@ async def get_many_candidate(
     order: str = Query(None, enum=["ASC", "DESC"]),
     keyword: Optional[str] = None,
     order_field: Optional[str] = None,  # Correction de order_filed → order_field
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"]))
+    # current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"]))
 ):
     return crud.candidate.get_multi(
         db=db,
@@ -94,7 +90,7 @@ def get_candidate_by_uuid(
     *,
     uuid:str, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER","SUPER_ADMIN","ADMIN"]))
 ):
     return crud.candidate.get_by_uuid(db=db, uuid=uuid)
     

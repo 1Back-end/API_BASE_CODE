@@ -34,8 +34,6 @@ class JobOffer(Base):
     uuid = Column(String, primary_key=True)  # Identifiant unique (UUID)
     title = Column(String, nullable=False)  # Titre du poste
     description = Column(Text, nullable=False)  # Description détaillée
-    company_name = Column(String, nullable=False)  # Nom de l'entreprise
-    location = Column(String,nullable=False)  # Lieu du travail
     currency = Column(String, nullable=False, default="FCFA")
     salary = Column(Float,nullable=False)  # Salaire proposé
     full_salary = Column(String,nullable=False) 
@@ -47,6 +45,8 @@ class JobOffer(Base):
     work_mode = Column(String,nullable=False, default=WorkMode.full_time)  # Mode de travail (enum)
     contact_email = Column(String, nullable=False)  # Email de contact
     is_deleted = Column(Boolean,default=False)
+    added_by = Column(String, ForeignKey("users.uuid"), nullable=True)  # Référence au propriétaire
+    owner = relationship("User", foreign_keys=[added_by])
 
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

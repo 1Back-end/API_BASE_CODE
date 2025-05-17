@@ -79,14 +79,14 @@ def get_file(
     if not file_record:
         raise HTTPException(
             status_code=404,
-            detail="File not found"
+            detail="File-not-found"
         )
         
     url = get_file_url(public_id = file_record.public_id)
     if not url:  # If the file doesn't exist in Cloudinary
         raise HTTPException(
             status_code=404,
-            detail="File not found"
+            detail="File-not-found"
         )
     # Generate the secure URL for the file
     return  file_record
@@ -108,14 +108,14 @@ def get_file(
     if not file_record:
         raise HTTPException(
             status_code=404,
-            detail="File not found"
+            detail="File-not-found"
         )
     # Generate the secure URL for the file
     url = get_file_url(file_record.public_id)
     if not url:  # If the file doesn't exist in Cloudinary
         raise HTTPException(
             status_code=404,
-            detail="File not found"
+            detail="File-not-found"
         )
 
     return RedirectResponse(url = url)
@@ -279,7 +279,7 @@ async def delete(
     file_record = get_file_by_public_id(db, file_public_id)
     db.delete(file_record)
     db.commit()
-    return {"message": __("document-deleted-successfully")}
+    return {"message":("document-deleted-successfully")}
     
     
 
