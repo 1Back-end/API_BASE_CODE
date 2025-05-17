@@ -15,7 +15,7 @@ async def create_company(
     *,
     db: Session = Depends(get_db),
     obj_in:schemas.CompanyCreate,
-     current_user: models.User = Depends(TokenRequired(roles=["Owner"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     exist_email = crud.company.get_by_email(db=db,email=obj_in.email)
     if exist_email:
@@ -28,7 +28,7 @@ async def update_company(
     *,
     db: Session = Depends(get_db),
     obj_in: schemas.CompanyUpdate,
-     current_user: models.User = Depends(TokenRequired(roles=["Owner"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     exist_email = crud.company.get_by_email(db=db,email=obj_in.email)
     if exist_email:
@@ -53,7 +53,7 @@ async def get_many_company(
     type: str = Query(..., enum=[st.value for st in models.CompanyType]),
     keyword: Optional[str] = None,
     order_field: Optional[str] = None,  # Correction de order_filed → order_field
-     current_user: models.User = Depends(TokenRequired(roles=["Owner"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     return crud.company.get_multi(
         db=db,
@@ -72,7 +72,7 @@ async def delete_company(
     *,
     db: Session = Depends(get_db),
     obj_in:schemas.CompanyDelete,
-    current_user: models.User = Depends(TokenRequired(roles=["Owner"]))
+    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
     
 ):
     crud.company.delete(db=db, uuid=obj_in.uuid)
@@ -84,7 +84,7 @@ async def update_status_company(
     db: Session = Depends(get_db),
     obj_in:schemas.CompanyUpdateStatus,
     status: str = Query(..., enum=[st.value for st in models.CompanyStatus]), 
-    current_user: models.User = Depends(TokenRequired(roles=["Owner"]))
+    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
     crud.company.update_status(db=db, status=status, uuid=obj_in.uuid)
     return schemas.Msg(message=__(key="company-status-updated-successfully"))
@@ -94,7 +94,7 @@ async def get_owner_company(
     *,
     db: Session = Depends(get_db),
     owner_uuid:str,
-    current_user: models.User = Depends(TokenRequired(roles=["Owner"]))
+    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 
 ):
     return crud.company.get_by_owner_uuid(db=db,owner_uuid=owner_uuid)
@@ -111,7 +111,7 @@ async def get_many_company_by_admin(
     keyword: Optional[str] = None,
     order_field: Optional[str] = None,  # Correction de order_filed → order_field
     owner_uuid:Optional[str] = None,
-    current_user: models.User = Depends(TokenRequired(roles=["Owner"]))
+    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
     return crud.company.get_multi_admin(
         db=db,
