@@ -111,7 +111,7 @@ async def get_many_company_by_admin(
     keyword: Optional[str] = None,
     order_field: Optional[str] = None,  # Correction de order_filed → order_field
     owner_uuid:Optional[str] = None,
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
+    # current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
     return crud.company.get_multi_admin(
         db=db,

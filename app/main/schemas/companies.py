@@ -29,7 +29,7 @@ class CompanyCreate(CompanyBase):
 
 
 class CompanyUpdate(BaseModel):
-    uuid:Optional[str]=None
+    uuid:str
     name:Optional[str]=None
     email:Optional[str]=None
     phone:Optional[str]=None
@@ -80,7 +80,7 @@ class CompanyResponseSlim1(BaseModel):
     logo:Optional[FileSlim1]=None
     signature:Optional[FileSlim1]=None
     stamp:Optional[FileSlim1]=None
-    owner:Optional[OwnerSlim]=None
+    owner:Optional[AddedBy]=None
     founded_at:Optional[datetime]=None
     employee_count:Optional[int]=None
     website: Optional[str]=None

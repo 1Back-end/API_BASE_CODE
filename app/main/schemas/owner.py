@@ -22,7 +22,7 @@ class OwnerSlim(BaseModel):
     firstname: Optional[str]
     lastname: str
     status: str
-    full_phone_number: Optional[str]
+    # full_phone_number: Optional[str]
     model_config = ConfigDict(from_attributes=True)
 
 class OwnerResponse(BaseModel):

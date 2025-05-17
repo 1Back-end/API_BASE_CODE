@@ -16,7 +16,7 @@ def create_offers(
     db: Session = Depends(get_db),
     obj_in:schemas.JobOffersCreate,
     background_tasks: BackgroundTasks,
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"])),  
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"])),  
 ):
     return crud.offers.create(db=db,obj_in=obj_in,background_tasks=background_tasks)
 
@@ -25,7 +25,7 @@ def update_offers(
     *,
     db: Session = Depends(get_db),
     obj_in:schemas.JobOffersUpdate,
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     return crud.offers.update(db=db,obj_in=obj_in)
 
@@ -35,7 +35,7 @@ def create_offers(
     db: Session = Depends(get_db),
     obj_in:schemas.JobOffersUpdateStatus,
     status: str = Query(..., enum=[st.value for st in models.JobStatus]),
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     crud.offers.update_status(db=db,uuid=obj_in.uuid,status=status)
     return schemas.Msg(message=__(key="offer-status-updated-successfully"))
@@ -45,7 +45,7 @@ def delete_offers(
     *,
     db: Session = Depends(get_db),
     obj_in:schemas.JobOffersDelete,
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     crud.offers.delete(db=db,obj_in=obj_in)
     return schemas.Msg(message=__(key="offer-delete-successfully"))
@@ -62,7 +62,7 @@ async def get_many_offers(
     employment_type: str = Query(..., enum=[st.value for st in models.ContractType]),
     keyword: Optional[str] = None,
     order_field: Optional[str] = None,  # Correction de order_filed → order_field
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN"]))
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     return crud.offers.get_multi(
         db=db,
