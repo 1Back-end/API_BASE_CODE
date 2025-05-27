@@ -9,3 +9,4 @@ from .company_crud import *
 from .job_offers_crud import *
 from .candidates_crud import *
 from .application_crud import *
+from .notifications_crud import *

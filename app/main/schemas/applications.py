@@ -20,11 +20,13 @@ class ApplicationDetails(BaseModel):
 class ApplicationResponse(BaseModel):
     uuid:str
     candidate:CandidateSlim
-    job_offer:JobOffersSlim
-    cover_letter:FileSlim1
     cv:FileSlim1
+    cover_letter:FileSlim1
     applied_date:datetime
     status:str
+    job_offer:JobOffersSlim
+    
+    
     model_config = ConfigDict(from_attributes=True)
 
 class ApplicationResponseList(BaseModel):
