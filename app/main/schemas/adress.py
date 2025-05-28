@@ -25,6 +25,12 @@ class AddressBase(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class AddressCreation(BaseModel):
+    city: str
+    zipcode: str
+    country: str
+    model_config = ConfigDict(from_attributes=True)
+
 
 class Address(AddressBase):
     uuid: str

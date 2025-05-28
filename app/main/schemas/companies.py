@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 from app.main.schemas import UserAuthentication, File, DataList
-from app.main.schemas.adress import AddressSlim
+from app.main.schemas.adress import AddressSlim, AddressCreation
 from app.main.schemas.owner import OwnerSlim
 from app.main.schemas.user import AddedBy
 from app.main.models.companies import CompanyStatus,CompanyType
@@ -14,14 +14,22 @@ class CompanyBase(BaseModel):
     phone:str
     description:str
     slogan:str
-    address_uuid:str
     logo_uuid:Optional[str]=None
-    signature_uuid:Optional[str]=None
-    stamp_uuid:Optional[str]=None
     founded_at:datetime
     employee_count:int
     type:CompanyType
     website:Optional[str]=None
+
+    firstname: Optional[str] = None
+    lastname: Optional[str] = None
+    phone_number: Optional[str] = None
+    password_hash: str
+    owner_email:EmailStr
+
+    city: str
+    zipcode: str
+    country: str
+
     model_config = ConfigDict(from_attributes=True)
 
 class CompanyCreate(CompanyBase):
@@ -76,10 +84,8 @@ class CompanyResponseSlim1(BaseModel):
     phone:Optional[str]=None
     description:Optional[str]=None
     slogan:Optional[str]=None
-    address:Optional[AddressSlim]=None
+    address:Optional[AddressCreation]=None
     logo:Optional[FileSlim1]=None
-    signature:Optional[FileSlim1]=None
-    stamp:Optional[FileSlim1]=None
     owner:Optional[AddedBy]=None
     founded_at:Optional[datetime]=None
     employee_count:Optional[int]=None

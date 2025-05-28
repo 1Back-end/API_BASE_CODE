@@ -13,11 +13,11 @@ class CompanyStatus(str,Enum):
     CLOSED = "CLOSED"
 
 class CompanyType(str,Enum):
-    PERSONNAL = "PERSONNAL",
+    EI = "EI",
     SARL = "SARL"
     SA = "SA"
-    SAS = "SAS"
     ONG = "ONG"
+    SAS = "SAS"
     
 
 class Company(Base):
@@ -36,16 +36,10 @@ class Company(Base):
     logo_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
     logo = relationship("Storage", foreign_keys=[logo_uuid])
 
-    signature_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
-    signature = relationship("Storage", foreign_keys=[signature_uuid])
-
-    stamp_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
-    stamp = relationship("Storage", foreign_keys=[stamp_uuid])
-
     founded_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     employee_count = Column(Integer, default=0)
-    type = Column(String, nullable=False,default=CompanyType.PERSONNAL)
+    type = Column(String, nullable=False)
     status = Column(String,nullable=False, default=CompanyStatus.INACTIVE)
 
     website = Column(String, nullable=True)

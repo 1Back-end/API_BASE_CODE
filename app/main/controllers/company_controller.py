@@ -6,22 +6,48 @@ from app.main.core.dependencies import get_db, TokenRequired
 from app.main import schemas, crud, models
 from app.main.core.i18n import __
 from app.main.core.config import Config
+from app.main.core.security import is_valid_password
+
 # from app.main.core.dependencies import OwnerTokenRequired
 
 router = APIRouter(prefix="/company", tags=["company"])
 
-@router.post("/create/owners", response_model=schemas.CompanyResponse)
+@router.post("/create", response_model=schemas.Msg)
 async def create_company(
     *,
     db: Session = Depends(get_db),
     obj_in:schemas.CompanyCreate,
-    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
-    exist_email = crud.company.get_by_email(db=db,email=obj_in.email)
-    if exist_email:
+    exist_email_company = crud.company.get_by_email(db=db,email=obj_in.email)
+    if exist_email_company:
         raise HTTPException(status_code=409,detail=__(key="this-email-is-already-in-used"))
-    added_by=current_user.uuid
-    return crud.company.create(db=db,obj_in=obj_in,added_by=added_by)
+
+    exist_phone_company = crud.company.get_by_phone(db=db,phone=obj_in.phone)
+    if exist_phone_company:
+        raise  HTTPException(status_code=409,detail=__(key="this-phone-is-already-in-used"))
+
+    exist_owner_email = crud.owner.get_by_email(db=db, email=obj_in.owner_email)
+    if exist_owner_email:
+        raise HTTPException(status_code=409, detail=__(key="owner-email-taken"))
+
+    exist_phone_owner = crud.owner.get_by_phone_number(db=db, phone_number=obj_in.phone_number)
+    if exist_phone_owner:
+        raise HTTPException(status_code=409, detail=__(key="phone-number-already-exist"))
+
+    exist_user_phone = crud.user.get_by_phone_number(db=db, phone_number=obj_in.phone_number)
+    if exist_user_phone:
+        raise HTTPException(status_code=409, detail=__(key="phone-number-already-used"))
+
+    exist_user_email = crud.user.get_by_email(db=db, email=obj_in.email)
+    if exist_user_email:
+        raise HTTPException(status_code=409, detail=__(key="email-already-used"))
+
+    if not is_valid_password(obj_in.password_hash):
+        raise HTTPException(status_code=400, detail=__(key="invalid-password"))
+
+    crud.company.create(db=db,obj_in=obj_in)
+    return schemas.Msg(message=__(key="compnay-created-successfully"))
+
 
 @router.put("/update/owners",response_model=schemas.CompanyResponse)
 async def update_company(

@@ -17,7 +17,7 @@ class CRUDOwner(CRUDBase[models.Owner, schemas.OwnerCreate,schemas.OwnerUpdate])
 
     @classmethod
     def get_by_email(cls, db: Session, *, email: EmailStr) -> Optional[models.Owner]:
-        return db.query(models.Owner).filter(models.Owner.email == email).first()
+        return db.query(models.Owner).filter(models.Owner.owner_email==email).first()
     
     @classmethod
     def get_by_phone_number(cls, db: Session, *, phone_number: EmailStr) -> Optional[models.Owner]:
@@ -32,7 +32,7 @@ class CRUDOwner(CRUDBase[models.Owner, schemas.OwnerCreate,schemas.OwnerUpdate])
         commond_uuid = str(uuid.uuid4())
         owner = models.Owner(
             uuid= commond_uuid,
-            email = obj_in.email,
+            email = obj_in.owner_email,
             phone_number=obj_in.phone_number,
             firstname = obj_in.firstname,
             lastname = obj_in.lastname,

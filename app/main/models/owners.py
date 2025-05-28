@@ -19,16 +19,14 @@ class Owner(Base):
 
     uuid: str = Column(String, primary_key=True, unique=True)
 
-    email: str = Column(String, nullable=False, default="")
+    owner_email: str = Column(String, nullable=True, default="")
     firstname: str = Column(String, nullable=False, default="")
     lastname: str = Column(String, nullable=False, default="")
     phone_number: str = Column(String(20), nullable=False, default="", index=True)
+    civility : str = Column(String, nullable=True, default="")
     
     avatar_uuid: str = Column(String, ForeignKey('storages.uuid'), nullable=True)
     avatar = relationship("Storage", foreign_keys=[avatar_uuid], uselist=False)
-    
-    
-    password_hash: str = Column(String(100), nullable=True, default="")
     status = Column(String, index=True, nullable=False, default=Ownerstatus.UNACTIVED)
     is_deleted = Column(Boolean,default=False)
 

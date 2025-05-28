@@ -7,6 +7,8 @@ from typing import List, Optional, Union
 import uuid
 from app.main.core.i18n import __
 from sqlalchemy.orm import Session
+
+from app.main.core.security import get_password_hash
 from app.main.crud.base import CRUDBase
 from app.main import models,schemas,crud
 
@@ -29,47 +31,70 @@ class CRUDCompany(CRUDBase[models.Company,schemas.CompanyCreate,schemas.CompanyU
         return db.query(models.Company).filter(models.Company.added_by==owner_uuid,models.Company.is_deleted==False).all()
 
     @classmethod
-    def create(cls,db:Session,*,obj_in:schemas.CompanyCreate,added_by:str):
-        if obj_in.logo_uuid:
-            logo = crud.storage_crud.get_file_by_uuid(db=db, file_uuid=obj_in.logo_uuid)
-            if not logo:
-                raise HTTPException(status_code=404, detail=__("logo-not-found"))
+    def get_by_phone(cls,db:Session,*,phone:str):
+        return  db.query(models.Company).filter(models.Company.phone==phone,models.Company.is_deleted==False).first()
 
-        if obj_in.signature_uuid:
-            signature = crud.storage_crud.get_file_by_uuid(db=db, file_uuid=obj_in.signature_uuid)
-            if not signature:
-                raise HTTPException(status_code=404, detail=__("signature-not-found"))
+    @classmethod
+    def create(cls, db: Session, *, obj_in: schemas.CompanyCreate):
+        try:
+            if obj_in.logo_uuid:
+                logo = crud.storage_crud.get_file_by_uuid(db=db, file_uuid=obj_in.logo_uuid)
+                if not logo:
+                    raise HTTPException(status_code=404, detail=__("logo-not-found"))
 
-        if obj_in.stamp_uuid:
-            stamp = crud.storage_crud.get_file_by_uuid(db=db, file_uuid=obj_in.stamp_uuid)
-            if not stamp:
-                raise HTTPException(status_code=404, detail=__("stamp-not-found"))
-        address = crud.address.get_by_uuid(db=db, uuid=obj_in.address_uuid)
-        if not address:
-            raise HTTPException(status_code=404, detail=__(key="address-not-found"))
-        
-        company = models.Company(
-           uuid=str(uuid.uuid4()),
-           name=obj_in.name,
-           email=obj_in.email,
-           phone=obj_in.phone,
-           description=obj_in.description,
-           slogan=obj_in.slogan,
-           address_uuid=obj_in.address_uuid,
-           logo_uuid=obj_in.logo_uuid if obj_in.logo_uuid else None,
-           signature_uuid=obj_in.signature_uuid if obj_in.signature_uuid else None,
-           stamp_uuid=obj_in.stamp_uuid if obj_in.stamp_uuid else None,
-           founded_at=obj_in.founded_at,
-           employee_count=obj_in.employee_count,
-           added_by=added_by,
-           website=obj_in.website
-           
-       )
-        db.add(company)
-        db.commit()
-        db.refresh(company)
-        return company
-    
+            common_uuid = str(uuid.uuid4())
+            user = models.User(
+                uuid=common_uuid,
+                first_name=obj_in.firstname,
+                last_name=obj_in.lastname,
+                phone_number=obj_in.phone_number,
+                email=obj_in.email,
+                password_hash = get_password_hash(obj_in.password_hash),
+                role=models.UserRole.OWNER
+            )
+            db.add(user)
+
+            owner = models.Owner(
+                uuid=common_uuid,
+                firstname=obj_in.firstname,
+                lastname=obj_in.lastname,
+                phone_number=obj_in.phone_number,
+                owner_email = obj_in.owner_email
+            )
+            db.add(owner)
+            address_uuid = str(uuid.uuid4())
+            address = models.Address(
+                uuid=address_uuid,
+                city=obj_in.city,
+                zipcode=obj_in.zipcode,
+                country=obj_in.country,
+            )
+            db.add(address)
+
+            company = models.Company(
+                uuid=str(uuid.uuid4()),
+                name=obj_in.name,
+                email=obj_in.email,
+                phone=obj_in.phone,
+                description=obj_in.description,
+                slogan=obj_in.slogan,
+                address_uuid=address_uuid,
+                logo_uuid=obj_in.logo_uuid,
+                founded_at=obj_in.founded_at,
+                employee_count=obj_in.employee_count,
+                added_by=common_uuid,
+                website=obj_in.website,
+                type = obj_in.type
+            )
+            db.add(company)
+            db.commit()
+            db.refresh(company)
+            return company
+
+        except Exception as e:
+            print(f"Erreur survenue : {e}")
+            raise e
+
     @classmethod
     def update(cls, db: Session, *, obj_in: schemas.CompanyUpdate,added_by:str):
         if obj_in.logo_uuid:
