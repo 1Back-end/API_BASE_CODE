@@ -91,6 +91,9 @@ class CompanyResponseSlim1(BaseModel):
     employee_count:Optional[int]=None
     website: Optional[str]=None
     status:Optional[str]=None
+    type : str
+    created_at: datetime
+    updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
 
