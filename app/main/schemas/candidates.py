@@ -54,11 +54,9 @@ class CandidateBase(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
-    code_country: str
     phone_number: str
     address: Optional[str] = None
     avatar_uuid: Optional[str] = None
-    cv_uuid: Optional[str] = None
     password: str
 
 
@@ -71,19 +69,15 @@ class CandidateResponse(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
-    code_country: str
     phone_number: str
-    full_phone_number: str
     address: Optional[str] = None
     avatar: Optional[FileSlim1] = None
-    cv: Optional[FileSlim1] = None
 
 
 class Candidate(CandidateResponse):
     uuid: str
     experiences: List[Experience] = []
-    diplomas: List[Diploma] = []
-    graduation_year:str
+    diplomas: List[DiplomaBase] = []
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -97,13 +91,14 @@ class CandidateResponseList(BaseModel):
 
 
 class CandidateSlim(BaseModel):
+    uuid:str
     first_name: str
     last_name: str
     email: EmailStr
-    code_country: str
     phone_number: str
-    full_phone_number: str
     address: Optional[str] = None
+    experiences: List[Experience] = []
+    diplomas: List[DiplomaBase] = []
     model_config = ConfigDict(from_attributes=True)
 
 

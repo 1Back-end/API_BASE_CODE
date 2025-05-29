@@ -1,15 +1,14 @@
 from datetime import datetime
 from pydantic import BaseModel,EmailStr,ConfigDict
 from typing import Optional
-
 from app.main.models.job_offers import ContractType, WorkMode
+from app.main.schemas.user import AddedBy
+
 
 
 class JobOffersBase(BaseModel):
     title:str
     description:str
-    company_name:str
-    location:str
     currency:str
     salary:float
     employment_type:ContractType
@@ -26,8 +25,6 @@ class JobOffersUpdate(BaseModel):
     uuid:str
     title:Optional[str]=None
     description:Optional[str]=None
-    company_name:Optional[str]=None
-    location:Optional[str]=None
     currency:Optional[str]=None
     salary:Optional[float]=None
     employment_type:Optional[ContractType]=None
@@ -41,8 +38,6 @@ class JobOffersResponse(BaseModel):
     uuid:str
     title:str
     description:str
-    company_name:str
-    location:str
     full_salary:Optional[str]=None
     employment_type:ContractType
     posted_date:datetime
@@ -51,7 +46,24 @@ class JobOffersResponse(BaseModel):
     contact_email:EmailStr
     created_at:datetime
     updated_at:datetime
+    status:str
     model_config = ConfigDict(from_attributes=True)
+
+class JobOffersResponseSlim1(BaseModel):
+    uuid:str
+    title:str
+    description:str
+    full_salary:Optional[str]=None
+    employment_type:ContractType
+    posted_date:datetime
+    expiration_date:datetime
+    work_mode:WorkMode
+    contact_email:EmailStr
+    created_at:datetime
+    updated_at:datetime
+    owner:Optional[AddedBy]=None
+    model_config = ConfigDict(from_attributes=True)
+
 
 
 class JobOffersUpdateStatus(BaseModel):
@@ -72,12 +84,21 @@ class JobOffersResponseList(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class JobOffersResponseListSlim1(BaseModel):
+    total: int
+    pages: int
+    per_page: int
+    current_page:int
+    data: list[JobOffersResponseSlim1]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+
 class JobOffersSlim(BaseModel):
     uuid:str
     title:str
     description:str
-    company_name:str
-    location:str
     full_salary:Optional[str]
     employment_type:ContractType
     posted_date:datetime
@@ -86,3 +107,20 @@ class JobOffersSlim(BaseModel):
     contact_email:EmailStr
     created_at:datetime
     model_config = ConfigDict(from_attributes=True)
+
+
+class JobOffersSlim1(BaseModel):
+    uuid:str
+    title:str
+    description:str
+    full_salary:Optional[str]
+    employment_type:ContractType
+    posted_date:datetime
+    expiration_date:datetime
+    work_mode:WorkMode
+    contact_email:EmailStr
+    created_at:datetime
+    model_config = ConfigDict(from_attributes=True)
+
+
+

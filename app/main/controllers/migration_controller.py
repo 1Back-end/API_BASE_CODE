@@ -20,7 +20,7 @@ router = APIRouter(prefix="/migrations", tags=["migrations"])
 def check_user_access_key(admin_key: schemas.AdminKey):
     logger.info(f"Check user access key: {admin_key.key}")
     if admin_key.key not in [Config.ADMIN_KEY]:
-        raise HTTPException(status_code=400, detail="Clé d'accès incorrecte")
+        raise HTTPException(status_code=400, detail= "Invalid-access-key")
 
 
 @router.post("/create-database-tables", response_model=schemas.Msg, status_code=201)

@@ -116,23 +116,34 @@ class CRUDCandidat(CRUDBase[models.Candidat,schemas.CandidateBase,schemas.Candid
 
     @classmethod
     def create(cls, db: Session, *, candidate: schemas.CandidateCreate):
-        # Créer le candidat
+        commond_uuid = str(uuid.uuid4()),
         db_candidate = models.Candidat(
-            uuid=str(uuid.uuid4()),
+            uuid=commond_uuid,
             first_name=candidate.first_name,
             last_name=candidate.last_name,
             email=candidate.email,
-            code_country=candidate.code_country,
             phone_number=candidate.phone_number,
-            full_phone_number=f"{candidate.code_country}{candidate.phone_number}",
             address=candidate.address,
             avatar_uuid=candidate.avatar_uuid,
-            password=get_password_hash(candidate.password),
-            cv_uuid=candidate.cv_uuid,
+            password=get_password_hash(candidate.password)
         )
         db.add(db_candidate)
         db.commit()
         db.refresh(db_candidate)
+
+        new_user = models.User(
+            uuid=commond_uuid,
+            first_name=candidate.first_name,
+            last_name=candidate.last_name,
+            email=candidate.email,
+            phone_number=candidate.phone_number,
+            password_hash=get_password_hash(candidate.password),
+            role = models.UserRole.CANDIDAT
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
 
         # Vérifier et ajouter les expériences
         for exp in candidate.experiences:
@@ -189,8 +200,7 @@ class CRUDCandidat(CRUDBase[models.Candidat,schemas.CandidateBase,schemas.Candid
                     models.Candidat.first_name.ilike(f'%{keyword}%'),
                     models.Candidat.last_name.ilike(f'%{keyword}%'),
                     models.Candidat.email.ilike(f'%{keyword}%'),
-                    models.Candidat.phone_number.ilike(f'%{keyword}%'),
-                    models.Candidat.full_phone_number.ilike(f'%{keyword}%'),
+                    models.Candidat.phone_number.ilike(f'%{keyword}%')
                 )
             )
 

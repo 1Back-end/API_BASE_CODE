@@ -8,7 +8,8 @@ from .owners_controller import router as owners
 from .company_controller import router as company
 from .job_offers_controller import router as job_offers 
 from .candidates_controller import router as candidates 
-
+from .application_controller import router as application
+from .notifications_controller import router as notifications 
 
 api_router = APIRouter()
 
@@ -21,3 +22,5 @@ api_router.include_router(owners)
 api_router.include_router(company)
 api_router.include_router(job_offers)
 api_router.include_router(candidates) 
+api_router.include_router(application)
+api_router.include_router(notifications)

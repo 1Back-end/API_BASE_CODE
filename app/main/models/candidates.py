@@ -18,10 +18,8 @@ class Candidat(Base):
     avatar_uuid = Column(String, ForeignKey('storages.uuid'), nullable=True)  # UUID de l'avatar
     avatar = relationship("Storage", foreign_keys=[avatar_uuid], uselist=False)  # Relation avec le modèle Storage pour l'avatar
 
-    cv_uuid = Column(String, ForeignKey('storages.uuid'), nullable=True)  # Lien vers le CV
-    cv = relationship("Storage", foreign_keys=[cv_uuid], uselist=False)  # Relation avec le modèle Storage pour le CV
-
     experiences = relationship("Experience", back_populates="candidate")  # Relation avec les expériences
+    diplomas = relationship("Diploma", back_populates="candidate")  # Relation avec les expériences
     
     password = Column(String(100), nullable=False, default="")
     is_new_user = Column(Boolean, nullable=True, default=False)

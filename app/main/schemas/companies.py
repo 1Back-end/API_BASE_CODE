@@ -74,7 +74,7 @@ class CompanyResponse(BaseModel):
     employee_count:Optional[int]=None
     type:Optional[CompanyType]=None
     website: Optional[str]=None
-    status:Optional[CompanyStatus]=None
+    status:Optional[str]=None
     model_config = ConfigDict(from_attributes=True)
 
 class CompanyResponseSlim1(BaseModel):
@@ -92,8 +92,6 @@ class CompanyResponseSlim1(BaseModel):
     website: Optional[str]=None
     status:Optional[str]=None
     model_config = ConfigDict(from_attributes=True)
-
-
 
 
 class CompanyResponseList(BaseModel):
