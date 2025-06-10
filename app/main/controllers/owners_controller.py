@@ -64,45 +64,42 @@ def get(
     db: Session = Depends(get_db),
     page: int = 1,
     per_page: int = 30,
-    order:str = Query(None, enum =["ASC","DESC"]),
-    status: str = Query(None, enum =["ACTIVED","UNACTIVED","DELETED","BLOCKED"]),
+    order:Optional[str] = Query(None, enum =["ASC","DESC"]),
+    status: Optional[str] = Query(None, enum =["ACTIVED","UNACTIVED","DELETED","BLOCKED"]),
     keyword:Optional[str] = None,
-    # order_filed: Optional[str] = None
-    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
     """
     get administrator with all data by passing filters
     """
     
     return crud.owner.get_many(
-        db, 
-        page, 
-        per_page, 
-        order,
-        status,
-        # order_filed
-        keyword
+        db=db,
+        page=page,
+        per_page=per_page,
+        order=order,
+        status=status,
+        keyword=keyword,
     )
     
-@router.put("/{uuid}/status", response_model=schemas.OwnerResponse, status_code=200)
-def update(
-        uuid: str,
-        status: str = Query(None, enum =["ACTIVED","UNACTIVED","BLOCKED"]),
+@router.put("/update-owner-status", response_model=schemas.Msg, status_code=200)
+def update_owner_staus(
+        *,
         db: Session = Depends(get_db),
+        obj_in:schemas.OwnerSoftDelete,
+        status: str = Query(None, enum =["ACTIVED","UNACTIVED","BLOCKED"]),
         current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
 
-    return crud.owner.update_status(db=db,uuid=uuid,status=status)
+    crud.owner.update_status(db=db,uuid=obj_in.uuid,status=status)
+    return {"message": __(key="owner-status-updated-successfully")}
 
-@router.delete("/{uuid}/delete", response_model=schemas.Msg)
-def delete(
+
+@router.put("/soft_delete", response_model=schemas.Msg)
+def soft_delete_owner(
     *,
     db: Session = Depends(get_db),
-    uuid: str,
+    obj_in: schemas.OwnerSoftDelete,
     current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
-    """
-    Delete administrator
-    """
-    crud.owner.soft_delete(db, uuid)
+    crud.owner.soft_delete(db=db, uuid=obj_in.uuid)
     return {"message": __(key="owner-deleted")}

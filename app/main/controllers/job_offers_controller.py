@@ -61,7 +61,7 @@ async def get_many_offers(
     work_mode: str = Query(..., enum=[st.value for st in models.WorkMode]),
     employment_type: str = Query(..., enum=[st.value for st in models.ContractType]),
     keyword: Optional[str] = None,
-    order_field: Optional[str] = None,  # Correction de order_filed → order_field
+    order_field: Optional[str] = None,
     current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
     return crud.offers.get_multi(

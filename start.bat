@@ -7,3 +7,8 @@
     "password" : "0Z!i^/5}",
     "email" : "admin@example.com"
 }
+
+{
+    "password" : "Laurent&12345"
+    "email" : "devfullstack@example.com"
+}
