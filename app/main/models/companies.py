@@ -16,7 +16,6 @@ class CompanyType(str,Enum):
     EI = "EI",
     SARL = "SARL"
     SA = "SA"
-    ONG = "ONG"
     SAS = "SAS"
     
 

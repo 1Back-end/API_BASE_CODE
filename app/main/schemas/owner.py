@@ -6,11 +6,13 @@ from app.main.schemas.user import AddedBy
 
 class Owner(BaseModel):
     uuid: Optional[str] = None
-    email: EmailStr
+    owner_email: EmailStr
     firstname: Optional[str]
     lastname: str
     status: str
     avatar: Optional[File]
+    civility:Optional[str]=None
+    phone_number:Optional[str]=None,
     date_added: datetime
     date_modified: datetime
 
@@ -84,6 +86,8 @@ class OwnerUpdate(OwnerUpdateBase):
 class OwnerDelete(BaseModel):
     uuid: list[str]
 
+class OwnerSoftDelete(BaseModel):
+    uuid: str
 
 class OwnerList(DataList):
     data: list[Owner]

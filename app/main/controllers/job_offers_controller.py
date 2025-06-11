@@ -65,36 +65,7 @@ def delete_offers(
     if offers.added_by != current_user.uuid:
         raise HTTPException(status_code=403, detail=__("not-authorized"))
     crud.offers.delete(db=db,obj_in=obj_in)
-    return schemas.Msg(message=__(key="offer-deleted-successfully"))
-
-@router.get("/get_many_owners", response_model=None)
-async def get_owners_offers(
-    *,
-    db: Session = Depends(get_db),
-    page: int = 1,
-    per_page: int = 30,
-    order: str = Query(None, enum=["ASC", "DESC"]),
-    status: str = Query(..., enum=[st.value for st in models.JobStatus]),
-    work_mode: str = Query(..., enum=[st.value for st in models.WorkMode]),
-    employment_type: str = Query(..., enum=[st.value for st in models.ContractType]),
-    keyword: Optional[str] = None,
-    order_field: Optional[str] = None,  # Correction de order_filed → order_field
-    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
-):
-    return crud.offers.get_multi_owners(
-        db=db,
-        page=page,
-        per_page=per_page,
-        order=order,
-        status=status,
-        work_mode=work_mode,
-        employment_type=employment_type,
-        order_field=order_field,  # Correction ici aussi
-        keyword=keyword,
-        added_by=current_user.uuid
-        
-    )
-
+    return schemas.Msg(message=__(key="offer-delete-successfully"))
 
 @router.get("/get_many", response_model=None)
 async def get_many_offers(
@@ -107,9 +78,10 @@ async def get_many_offers(
     work_mode: str = Query(..., enum=[st.value for st in models.WorkMode]),
     employment_type: str = Query(..., enum=[st.value for st in models.ContractType]),
     keyword: Optional[str] = None,
-    order_field: Optional[str] = None,  # Correction de order_filed → order_field
+    order_field: Optional[str] = None,
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
-    return crud.offers.get_many(
+    return crud.offers.get_multi(
         db=db,
         page=page,
         per_page=per_page,
@@ -118,7 +90,7 @@ async def get_many_offers(
         work_mode=work_mode,
         employment_type=employment_type,
         order_field=order_field,  # Correction ici aussi
-        keyword=keyword
+        keyword=keyword,
         
     )
 

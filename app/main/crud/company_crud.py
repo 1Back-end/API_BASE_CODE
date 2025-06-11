@@ -198,6 +198,14 @@ class CRUDCompany(CRUDBase[models.Company,schemas.CompanyCreate,schemas.CompanyU
             raise HTTPException(status_code=404, detail=__("company-not-found"))
         company.is_deleted = True
         db.commit()
+
+    @classmethod
+    def soft_delete(cls,db:Session,*,uuid:str):
+        company = cls.get_by_uuid(db=db, uuid=uuid)
+        if not company:
+            raise HTTPException(status_code=404, detail=__("company-not-found"))
+        company.is_deleted = True
+        db.commit()
     
     @classmethod
     def update_status(cls,db:Session,*,status:str,uuid:str):
@@ -215,12 +223,8 @@ class CRUDCompany(CRUDBase[models.Company,schemas.CompanyCreate,schemas.CompanyU
         db: Session,
         page: int = 1,
         per_page: int = 30,
-        order: Optional[str] = None,
-        order_field: Optional[str] = None,
         keyword: Optional[str] = None,
-        status: Optional[str] = None,
-        type:Optional[str] = None,
-        owner_uuid: str = None
+        status : Optional[str] = None,
     ):
         
         if page < 1:
@@ -239,19 +243,46 @@ class CRUDCompany(CRUDBase[models.Company,schemas.CompanyCreate,schemas.CompanyU
                     models.Company.website.ilike(f'%{keyword}%')
                 )
             )
-
-        if order and order_field and hasattr(models.Company, order_field):
-            if order == "asc":
-                record_query = record_query.order_by(getattr(models.Company, order_field).asc())
-            else:
-                record_query = record_query.order_by(getattr(models.Company, order_field).desc())
         if status:
             record_query = record_query.filter(models.Company.status == status)
-        if type:
-            record_query = record_query.filter(models.Company.type == type)
-        if owner_uuid:
-            record_query = record_query.filter(models.Company.added_by == owner_uuid)
 
+        total = record_query.count()
+
+        record_query = record_query.offset((page - 1) * per_page).limit(per_page).all()
+
+        return schemas.CompanyResponseListSlim1(
+            total=total,
+            pages=math.ceil(total / per_page),
+            per_page=per_page,
+            current_page=page,
+            data=record_query
+        )
+
+    @classmethod
+    def activate_company(
+            cls,
+            *,
+            db: Session,
+            page: int = 1,
+            per_page: int = 30,
+            keyword: Optional[str] = None,
+    ):
+        if page < 1:
+            page = 1
+
+        record_query = db.query(models.Company).filter(models.Company.is_deleted == False,models.Company.status.in_(["ACTIVE"]))
+
+        if keyword:
+            record_query = record_query.filter(
+                or_(
+                    models.Company.name.ilike(f'%{keyword}%'),
+                    models.Company.phone.ilike(f'%{keyword}%'),
+                    models.Company.email.ilike(f'%{keyword}%'),
+                    models.Company.slogan.ilike(f'%{keyword}%'),
+                    models.Company.description.ilike(f'%{keyword}%'),
+                    models.Company.website.ilike(f'%{keyword}%')
+                )
+            )
 
         total = record_query.count()
 
@@ -266,9 +297,4 @@ class CRUDCompany(CRUDBase[models.Company,schemas.CompanyCreate,schemas.CompanyU
         )
 
 
-            
-    
-    
-        
-    
 company = CRUDCompany(models.Company)

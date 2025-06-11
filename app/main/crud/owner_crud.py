@@ -81,14 +81,15 @@ class CRUDOwner(CRUDBase[models.Owner, schemas.OwnerCreate,schemas.OwnerUpdate])
         per_page:int = 30,
         order:Optional[str] = None,
         status:Optional[str] = None,
-        keyword:Optional[str]= None
+        keyword:Optional[str]= None,
+        order_filed: Optional[str] = None,
     ):
         record_query = db.query(models.Owner).filter(models.Owner.status.not_in([models.Ownerstatus.BLOCKED,models.Ownerstatus.DELETED]))
         if keyword:
             record_query = record_query.filter(
                 or_(
                     models.Owner.firstname.ilike('%' + str(keyword) + '%'),
-                    models.Owner.email.ilike('%' + str(keyword) + '%'),
+                    models.Owner.owner_email.ilike('%' + str(keyword) + '%'),
                     models.Owner.lastname.ilike('%' + str(keyword) + '%'),
                     models.Owner.phone_number.ilike('%' + str(keyword) + '%'),
 
@@ -113,19 +114,19 @@ class CRUDOwner(CRUDBase[models.Owner, schemas.OwnerCreate,schemas.OwnerUpdate])
             data =record_query
         )
     @classmethod
-    def update_status(cls, db: Session, uuid:str,status:str) -> models.Owner:
+    def update_status(cls, db: Session, uuid:str,status:str):
         owner = cls.get_by_uuid(db=db,uuid=uuid)
         if not owner:
          raise HTTPException(status_code=404, detail=__("owner-not-found"))
         owner.status = status
         db.commit()
-        return owner
+
     @classmethod
     def soft_delete(cls,db:Session,uuid:str):
         owner = cls.get_by_uuid(db=db,uuid=uuid)
         if not owner:
          raise HTTPException(status_code=404, detail=__("owner-not-found"))
-        owner.status =  models.Ownerstatus.DELETED
+        owner.is_deleted=True
         db.commit()
 
     @classmethod

@@ -104,6 +104,18 @@ async def delete_company(
     crud.company.delete(db=db, uuid=obj_in.uuid)
     return schemas.Msg(message=__(key="company-deleted-successfully"))
 
+
+@router.put("/soft_delete/auth", response_model=schemas.Msg)
+async def soft_delete_company(
+        *,
+        db: Session = Depends(get_db),
+        obj_in: schemas.CompanyDelete,
+        current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN", "ADMIN"]))
+):
+    crud.company.soft_delete(db=db, uuid=obj_in.uuid)
+    return schemas.Msg(message=__(key="company-deleted-successfully"))
+
+
 @router.put("/update_status/auth",response_model=schemas.Msg)
 async def update_status_company(
     *,
@@ -131,22 +143,31 @@ async def get_many_company_by_admin(
     db: Session = Depends(get_db),
     page: int = 1,
     per_page: int = 30,
-    order: str = Query(None, enum=["ASC", "DESC"]),
-    status: str = Query(..., enum=[st.value for st in models.CompanyStatus]),
-    type: str = Query(..., enum=[st.value for st in models.CompanyType]),
     keyword: Optional[str] = None,
-    order_field: Optional[str] = None,  # Correction de order_filed → order_field
-    owner_uuid:Optional[str] = None,
-    # current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
+    status: Optional[str] = Query(None, enum=[st.value for st in models.CompanyStatus]),
+    current_user: models.User = Depends(TokenRequired(roles=["SUPER_ADMIN","ADMIN"]))
 ):
     return crud.company.get_multi_admin(
         db=db,
         page=page,
         per_page=per_page,
-        order=order,
-        status=status,
-        type=type,
-        order_field=order_field,  # Correction ici aussi
         keyword=keyword,
-        owner_uuid=owner_uuid  # Ajout du filtre par propriétaire
+        status=status,
+        
+    )
+
+
+@router.get("/activate_company", response_model=None)
+async def get_all_active_companies(
+        *,
+        db: Session = Depends(get_db),
+        page: int = 1,
+        per_page: int = 30,
+        keyword: Optional[str] = None,
+):
+    return crud.company.activate_company(
+        db=db,
+        page=page,
+        per_page=per_page,
+        keyword=keyword
     )
