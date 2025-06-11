@@ -15,7 +15,7 @@ class Competence(Base):
     date_added = Column(DateTime, default=datetime.utcnow)
     
 
-    candidate_iuud = Column(Integer, ForeignKey("candidats.id"), nullable=False)
+    candidate_iuud = Column(Integer, ForeignKey("candidate.id"), nullable=False)
     candidate = relationship("Candidat", back_populates="competences")
 
     is_deleted = Column(Boolean, default=False)
