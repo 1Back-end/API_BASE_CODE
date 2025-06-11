@@ -7,3 +7,4 @@ from .job_offers import *
 from .companies import * 
 from .address import *
 from .applications import *
+from .competences import *
