@@ -8,14 +8,16 @@ class Competence(Base):
 
     uuid = Column(String, primary_key=True, index=True)
     title = Column(String, nullable=False)
-    level = Column(String, nullable=False)
+    level = Column(Integer, nullable=False)
     is_certified = Column(Boolean, default=False)  # anciennement certifiee
     description = Column(String, nullable=True)
-    category = Column(String, nullable=True)   # Ex : Informatique, Management, Communication
-    date_added = Column(DateTime, default=datetime.utcnow)
-    
+   
 
-    candidate_iuud = Column(Integer, ForeignKey("candidate.id"), nullable=False)
+    candidate_uuid = Column(String, ForeignKey("candidates.uuid"), nullable=False)
     candidate = relationship("Candidat", back_populates="competences")
 
-    is_deleted = Column(Boolean, default=False)
+    is_deleted = Column(Boolean,default=False)
+    date_added = Column(DateTime, nullable=False, default=datetime.now())
+    date_modified = Column(DateTime, nullable=False, default=datetime.now(), onupdate=datetime.now())
+
+

@@ -10,3 +10,4 @@ from .companies import *
 from .job_offers import *
 from .candidates import *
 from .applications import *
+from .competences import *
