@@ -1,5 +1,5 @@
 from datetime import timedelta, datetime
-from typing import Any, Optional
+from typing import Any, Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.main.core.dependencies import get_db, TokenRequired
@@ -89,3 +89,17 @@ async def get_all_my_competences(
         candidate_uuid=current_user.uuid,
 
     )
+
+
+@router.get("/get_competences_by_uuid",response_model=schemas.CompetenceResponse)
+async def get_competence(
+    *,
+    db: Session = Depends(get_db),
+    uuid:str,
+    current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
+
+):
+    data = crud.competences.get_by_uuid(db=db,uuid=uuid)
+    if data is None:
+        raise HTTPException(status_code=404,detail=__(key="competence-not-found"))
+    return data

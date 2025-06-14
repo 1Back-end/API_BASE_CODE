@@ -23,14 +23,14 @@ class CRUDCompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas
         return db.query(models.Competence).filter(models.Competence.candidate_uuid==candidate_uuid,models.Competence.is_deleted==False).all()
     
     @classmethod
-    def create(cls, db: Session, *, competence: schemas.CompetenceCreate,candidate_uuid:str):
+    def create(cls, db: Session, *, obj_in: schemas.CompetenceCreate,candidate_uuid:str):
         
         new_competence = models.Competence(
             uuid = str(uuid.uuid4()),
-            title = competence.title,
-            level = competence.level,
-            is_certified = competence.is_certified,
-            description=competence.description,
+            title = obj_in.title,
+            level = obj_in.level,
+            is_certified = obj_in.is_certified,
+            description=obj_in.description,
             candidate_uuid = candidate_uuid
             
         )
@@ -55,8 +55,12 @@ class CRUDCompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas
         db.refresh(db_obj)
         return db_obj
 
+
+
+
     @classmethod
     def get_my_competences(
+            cls,
             *,
             db: Session,
             page: int = 1,
@@ -71,7 +75,7 @@ class CRUDCompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas
             page = 1
 
 
-        record_query = db.query(models.Competence).filter(models.Competence,models.Competence.is_deleted == False)
+        record_query = db.query(models.Competence).filter(models.Competence.is_deleted == False,models.Competence.candidate_uuid == candidate_uuid)
         if keyword:
 
                 record_query = record_query.filter(
@@ -107,7 +111,7 @@ class CRUDCompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas
         competence = cls.get_by_uuid(db=db,uuid=uuid)
         if not competence:
             raise HTTPException(status_code=404,detail=__(key="competence-not-found"))
-        competence.is_deleted = True
+        db.delete(competence)
         db.commit()
 
     @classmethod
