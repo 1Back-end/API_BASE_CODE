@@ -88,7 +88,6 @@ class User(Base):
     first_login_date = Column(DateTime, nullable=True, default=None)  # Date de la première connexion
     last_login_date = Column(DateTime, nullable=True, default=None)  # Date de la dernière connexion
     connexion_counter = Column(Integer, nullable=True, default=0)  # Compteur de connexions
-
     def __repr__(self):
         """
         String representation of the User object.

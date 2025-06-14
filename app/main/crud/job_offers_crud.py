@@ -27,21 +27,20 @@ class CRUDJobOffers(CRUDBase[models.JobOffer,schemas.JobOffersCreate,schemas.Job
         return db.query(models.JobOffer).filter(models.JobOffer.work_mode==work_mode,models.JobOffer.is_deleted==False).first()
     
     @classmethod
-    def create(cls,db:Session,obj_in:schemas.JobOffersCreate,background_tasks: BackgroundTasks):
+    def create(cls,db:Session,obj_in:schemas.JobOffersCreate,background_tasks: BackgroundTasks,added_by:str):
         offers = models.JobOffer(
             uuid=str(uuid.uuid4()),
             title=obj_in.title,
             description=obj_in.description,
-            company_name=obj_in.company_name,
-            location=obj_in.location,
             salary=obj_in.salary,
             currency=obj_in.currency,
             full_salary=f"{obj_in.salary}{obj_in.currency}",
             employment_type=obj_in.employment_type,
-            posted_date=obj_in.posted_date,
             expiration_date=obj_in.expiration_date,
             work_mode=obj_in.work_mode,
-            contact_email=obj_in.contact_email
+            contact_email=obj_in.contact_email,
+            requirements = obj_in.requirements,
+            added_by=added_by
 
         )
         db.add(offers)
@@ -63,22 +62,21 @@ class CRUDJobOffers(CRUDBase[models.JobOffer,schemas.JobOffersCreate,schemas.Job
     
 
     @classmethod
-    def update(cls,db:Session,obj_in:schemas.JobOffersUpdate):
+    def update(cls,db:Session,obj_in:schemas.JobOffersUpdate,added_by:str):
         offers = cls.get_by_uuid(db=db,uuid=obj_in.uuid)
         if not offers:
             raise HTTPException(status_code=404,detail=__(key="offers-not-found"))
         offers.title = obj_in.title if obj_in.title else offers.title
         offers.description = obj_in.description if obj_in.description else offers.description
-        offers.company_name=obj_in.company_name if obj_in.company_name else offers.company_name
-        offers.location = obj_in.location if obj_in.location else offers.location
         offers.salary = obj_in.salary if obj_in.salary else offers.salary
         offers.currency = obj_in.currency if obj_in.currency else offers.currency
         offers.full_salary = f"{obj_in.salary}{obj_in.currency}" if obj_in.salary and  obj_in.currency else offers.full_salary
         offers.employment_type = obj_in.employment_type if obj_in.employment_type else offers.employment_type
-        offers.posted_date = obj_in.posted_date if obj_in.posted_date else offers.posted_date
         offers.expiration_date = obj_in.expiration_date if obj_in.expiration_date else offers.expiration_date
         offers.work_mode = obj_in.work_mode if obj_in.work_mode else offers.work_mode
-        offers.contact_email = obj_in.contact_email if obj_in.contact_email else offers.contact_email
+        offers.contact_email = obj_in.contact_email if obj_in.contact_email else offers.contact_email,
+        offers.requirements = obj_in.requirements if obj_in.requirements else offers.requirements
+        offers.added_by = added_by
         db.flush()
         db.commit()
         db.refresh(offers)
@@ -86,12 +84,22 @@ class CRUDJobOffers(CRUDBase[models.JobOffer,schemas.JobOffersCreate,schemas.Job
     
 
     @classmethod
-    def delete(cls, db: Session, obj_in: schemas.JobOffersDelete):
+    def soft_delete(cls, db: Session, obj_in: schemas.JobOffersDelete):
         offers = cls.get_by_uuid(db=db,uuid=obj_in.uuid)
         if not offers:
             raise HTTPException(status_code=404,detail=__(key="offers-not-found"))
         offers.is_deleted = True
         db.commit()
+
+    @classmethod
+    def delete(cls, db: Session, obj_in: schemas.JobOffersDelete):
+        offers = cls.get_by_uuid(db=db,uuid=obj_in.uuid)
+        if not offers:
+            raise HTTPException(status_code=404,detail=__(key="offers-not-found"))
+        db.delete(offers)
+        db.commit()
+
+
 
     @classmethod
     def update_status(cls,db:Session,uuid:str,status:str):
@@ -100,6 +108,7 @@ class CRUDJobOffers(CRUDBase[models.JobOffer,schemas.JobOffersCreate,schemas.Job
             raise HTTPException(status_code=404,detail=__(key="offers-not-found"))
         offers.status = status
         db.commit()
+
 
     @classmethod
     def get_multi(
@@ -125,8 +134,6 @@ class CRUDJobOffers(CRUDBase[models.JobOffer,schemas.JobOffersCreate,schemas.Job
             record_query = record_query.filter(
                 or_(
                     models.JobOffer.title.ilike(f'%{keyword}%'),
-                    models.JobOffer.company_name.ilike(f'%{keyword}%'),
-                    models.JobOffer.location.ilike(f'%{keyword}%'),
                     models.JobOffer.salary.ilike(f'%{keyword}%'),
                     models.JobOffer.description.ilike(f'%{keyword}%'),
                     models.JobOffer.requirements.ilike(f'%{keyword}%')
@@ -147,6 +154,62 @@ class CRUDJobOffers(CRUDBase[models.JobOffer,schemas.JobOffersCreate,schemas.Job
             record_query = record_query.filter(models.JobOffer.employment_type == employment_type)
 
 
+
+        total = record_query.count()
+
+        record_query = record_query.offset((page - 1) * per_page).limit(per_page).all()
+
+        return schemas.JobOffersResponseListWithOwner(
+            total=total,
+            pages=math.ceil(total / per_page),
+            per_page=per_page,
+            current_page=page,
+            data=record_query
+        )
+
+
+    @classmethod
+    def get_my_offers(
+            cls,
+            *,
+            db: Session,
+            page: int = 1,
+            per_page: int = 30,
+            order: Optional[str] = None,
+            order_field: Optional[str] = None,
+            keyword: Optional[str] = None,
+            status: Optional[str] = None,
+            work_mode: Optional[str] = None,
+            employment_type: Optional[str] = None,
+            added_by : Optional[str] = None,
+    ):
+        if page < 1:
+            page = 1
+
+        record_query = db.query(models.JobOffer).filter(models.JobOffer.is_deleted == False,models.JobOffer.added_by==added_by)
+
+        if keyword:
+            record_query = record_query.filter(
+                or_(
+                    models.JobOffer.title.ilike(f'%{keyword}%'),
+                    models.JobOffer.salary.ilike(f'%{keyword}%'),
+                    models.JobOffer.description.ilike(f'%{keyword}%'),
+                    models.JobOffer.requirements.ilike(f'%{keyword}%')
+                )
+            )
+
+        if order and order_field and hasattr(models.Company, order_field):
+            if order == "asc":
+                record_query = record_query.order_by(getattr(models.JobOffer, order_field).asc())
+            else:
+                record_query = record_query.order_by(getattr(models.JobOffer, order_field).desc())
+        if status:
+            record_query = record_query.filter(models.JobOffer.status == status)
+        if work_mode:
+            record_query = record_query.filter(models.JobOffer.work_mode == work_mode)
+
+        if employment_type:
+            record_query = record_query.filter(models.JobOffer.employment_type == employment_type)
 
         total = record_query.count()
 

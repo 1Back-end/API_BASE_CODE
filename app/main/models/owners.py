@@ -34,6 +34,8 @@ class Owner(Base):
     date_added: datetime = Column(DateTime, nullable=False, default=datetime.now())
     date_modified: datetime = Column(DateTime, nullable=False, default=datetime.now())
 
+    companies = relationship("Company", back_populates="owner")
+
     def __repr__(self):
         return '<Owner: uuid: {} email: {}>'.format(self.uuid, self.email)
 

@@ -9,3 +9,4 @@ from .adress import *
 from .companies import *
 from .job_offers import *
 from .candidates import *
+from .applications import *

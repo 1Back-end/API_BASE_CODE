@@ -128,3 +128,11 @@ class ResetPasswordOption3Step3(BaseModel):
     email: str
     otp: str
     new_password:str
+
+class OwnerSlimOut(BaseModel):
+    uuid: Optional[str] = None
+    owner_email: EmailStr
+    firstname: Optional[str]
+    lastname: str
+    model_config = ConfigDict(from_attributes=True)
+

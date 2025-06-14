@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 from app.main.schemas import UserAuthentication, File, DataList
@@ -114,5 +114,23 @@ class CompanyResponseListSlim1(BaseModel):
     per_page: int
     current_page:int
     data: list[CompanyResponseSlim1]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CompanyOut(BaseModel):
+    uuid: str
+    name: str
+    email: str
+    phone: str
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OwnerOut(BaseModel):
+    uuid: Optional[str] = None
+    firstname: Optional[str] = None
+    lastname: Optional[str] = None
+    phone_number: Optional[str] = None
+    companies: Optional[List[CompanyOut]] = None  # ✅ Liste d'entreprises
 
     model_config = ConfigDict(from_attributes=True)

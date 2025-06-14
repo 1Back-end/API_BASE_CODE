@@ -9,6 +9,10 @@
 }
 
 {
-    "password" : "Laurent&12345"
+    "password" : "0Z!i^/5}"
     "email" : "devfullstack@example.com"
+}
+{
+    "password" : "0Z!i^/5}"
+    "email" :"fogiz@mailinator.com"
 }
