@@ -14,7 +14,7 @@ class Competence(Base):
    
 
     candidate_uuid = Column(String, ForeignKey("candidates.uuid"), nullable=False)
-    candidate = relationship("Candidate", back_populates="competences")
+    candidate = relationship("Candidat", back_populates="competences")
 
     is_deleted = Column(Boolean,default=False)
     date_added = Column(DateTime, nullable=False, default=datetime.now())

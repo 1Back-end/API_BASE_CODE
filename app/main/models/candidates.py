@@ -21,6 +21,7 @@ class Candidat(Base):
 
     experiences = relationship("Experience", back_populates="candidate", cascade="all, delete-orphan")
     diplomas = relationship("Diploma", back_populates="candidate", cascade="all, delete-orphan")
+    competences = relationship("Competence", back_populates="candidate", cascade="all, delete-orphan")
 
 
     date_added = Column(DateTime, nullable=False, default=datetime.now())

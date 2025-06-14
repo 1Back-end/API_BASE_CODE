@@ -8,4 +8,4 @@ from .companies import *
 from .address import *
 from .applications import *
 from .competences import *
-from .languages import *
+#from .languages import *
