@@ -17,7 +17,7 @@ class CompetenceCreate(CompetenceBase):
 class CompetenceUpdate(CompetenceBase):
     uuid:str
     title: Optional[str] = None
-    level: Optional[str] = None
+    level: Optional[int] = None
     is_certified: Optional[bool] = None
     description: Optional[str] = None
 
@@ -25,8 +25,8 @@ class CompetenceUpdate(CompetenceBase):
 
 class CompetenceResponse(BaseModel):
     uuid:str
-    title: Optional[str] = None
-    level: Optional[str] = None 
+    title: str
+    level: int
     is_certified: Optional[bool] = None
     description: Optional[str] = None
     date_added :datetime
