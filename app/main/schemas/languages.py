@@ -16,15 +16,15 @@ class LanguageCreate(LanguageBase):
 class LanguageUpdate(LanguageBase):
     uuid:str
     title: Optional[str] = None
-    level: Optional[str] = None
+    level: Optional[int] = None
     description: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 class LanguageResponse(BaseModel):
     uuid:str
-    title: Optional[str] = None
-    level: Optional[str] = None 
+    title: str
+    level: int 
     description: Optional[str] = None
     date_added :datetime
     date_modified :Optional[datetime] = None

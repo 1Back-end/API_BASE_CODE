@@ -13,7 +13,7 @@ class Language(Base):
    
 
     candidate_uuid = Column(String, ForeignKey("candidates.uuid"), nullable=False)
-    candidate = relationship("Candidate", back_populates="languages")
+    candidate = relationship("Candidat", back_populates="languages")
 
     is_deleted = Column(Boolean,default=False)
     date_added = Column(DateTime, nullable=False, default=datetime.now())

@@ -10,6 +10,7 @@ from .job_offers_controller import router as job_offers
 from .candidates_controller import router as candidates 
 from .application_controller import router as application 
 from .competences_controller import router as competences
+from .languages_controller import router as languages
 
 api_router = APIRouter()
 
@@ -25,3 +26,4 @@ api_router.include_router(candidates)
 api_router.include_router(application)
 # api_router.include_router(notifications)
 api_router.include_router(competences)
+api_router.include_router(languages)

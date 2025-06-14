@@ -119,4 +119,5 @@ class CRUDCompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas
         db.commit()
 
 
+
 competences = CRUDCompetence(models.Competence)

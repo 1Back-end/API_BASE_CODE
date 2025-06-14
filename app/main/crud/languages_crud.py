@@ -23,9 +23,9 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
         return db.query(models.Language).filter(models.Language.candidate_uuid==candidate_uuid,models.Language.is_deleted==False).all()
     
     @classmethod
-    def create(cls, db: Session, *, Language: schemas.LanguageCreate,candidate_uuid:str):
+    def create(cls, db: Session, *, language: schemas.LanguageCreate,candidate_uuid:str):
         
-        new_competence = models.Language(
+        new_language = models.Language(
             uuid = str(uuid.uuid4()),
             title = language.title,
             level = language.level,
@@ -69,13 +69,13 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
             page = 1
 
 
-        record_query = db.query(models.Language).filter(models.Language,models.Competence.is_deleted == False)
+        record_query = db.query(models.Language).filter(models.Language,models.Language.is_deleted == False)
         if keyword:
 
                 record_query = record_query.filter(
                     or_(
-                        models.Competence.title.ilike(f'%{keyword}%'),
-                        models.Competence.level.ilike(f'%{keyword}%'),
+                        models.Language.title.ilike(f'%{keyword}%'),
+                        models.Language.level.ilike(f'%{keyword}%'),
                     )
                 )
     
@@ -83,14 +83,14 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
 
         if order and order_field and hasattr(models.languages, order_field):
             if order == "asc":
-                record_query = record_query.order_by(getattr(models.Competence, order_field).asc())
+                record_query = record_query.order_by(getattr(models.Language, order_field).asc())
             else:
-                record_query = record_query.order_by(getattr(models.Competence, order_field).desc())
+                record_query = record_query.order_by(getattr(models.Language, order_field).desc())
 
         total = record_query.count()
         record_query = record_query.offset((page - 1) * per_page).limit(per_page).all()
 
-        return schemas.CompetenceResponseList(
+        return schemas.LanguageResponseList(
             total=total,
             pages=math.ceil(total / per_page),
             per_page=per_page,
@@ -101,20 +101,20 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
 
    
     @classmethod
-    def delete(cls, db: Session, uuid:str):
-        competence = cls.get_by_uuid(db=db,uuid=uuid)
-        if not competence:
-            raise HTTPException(status_code=404,detail=__(key="competence-not-found"))
-        competence.is_deleted = True
+    def delete(cls,*, db: Session, uuid:str):
+        language = cls.get_by_uuid(db=db,uuid=uuid)
+        if not language:
+            raise HTTPException(status_code=404,detail=__(key="language-not-found"))
+        db.delete()
         db.commit()
 
     @classmethod
     def soft_delete(cls,db:Session,*,uuid:str):
-        competence = cls.get_by_uuid(db=db, uuid=uuid)
-        if not competence:
-            raise HTTPException(status_code=404, detail=__("competence-not-found"))
-        competence.is_deleted = True
+        language = cls.get_by_uuid(db=db, uuid=uuid)
+        if not language:
+            raise HTTPException(status_code=404, detail=__("language-not-found"))
+        language.is_deleted = True
         db.commit()
 
 
-competences = CRUDcompetence(models.Competence)
+languages = CRUDLanguage(models.Language)

@@ -7,69 +7,69 @@ from app.main import schemas, crud, models
 from app.main.core.i18n import __
 from app.main.core.dependencies import TokenRequired
 
-router = APIRouter(prefix="/competences", tags=["competences"])
+router = APIRouter(prefix="/languages", tags=["languages"])
 
 @router.post("/create",response_model=schemas.Msg)
-async def create_competences(
+async def create_language(
     *,
     db: Session = Depends(get_db),
-    obj_in:schemas.CompetenceCreate,
+    obj_in:schemas.LanguageCreate,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.competences.create(
+    crud.languages.create(
         db=db,
         obj_in=obj_in,
         candidate_uuid=current_user.uuid
     )
-    return schemas.Msg(message=__(key="competence-created-successfully"))
+    return schemas.Msg(message=__(key="language-added-successfully"))
 
 
 
 @router.put("/update",response_model=schemas.Msg)
-def update_competence(
+def update_language(
     *,
     db: Session = Depends(get_db),
-    competence:schemas.CompetenceUpdate,
+    language:schemas.LanguageUpdate,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.competences.update(
+    crud.languages.update(
         db=db,
-        competence=competence,
+        language=language,
         candidate_uuid=current_user.uuid  
     )
 
-    return schemas.Msg(message=__(key="competence-updated-successfully"))
+    return schemas.Msg(message=__(key="language-updated-successfully"))
 
 
 @router.delete("/delete-drop",response_model=schemas.Msg)
-async def delete_competence(
+async def delete_language(
     *,
     db: Session = Depends(get_db),
-    competence:schemas.CompetenceDelete,
+    language:schemas.LanguageDelete,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
     
 ):
-    crud.competences.delete(db=db,competence=competence,uuid=competence.uuid)
-    return schemas.Msg(message=__(key="competence-deleted-successfully"))
+    crud.languages.delete(db=db,language=language,uuid=language.uuid)
+    return schemas.Msg(message=__(key="language-deleted-successfully"))
 
 
 
 
 @router.put("/soft_delete", response_model=schemas.Msg)
-async def soft_delete_competence(
+async def soft_delete_language(
         *,
         db: Session = Depends(get_db),
-        obj_in: schemas.CompetenceDelete,
+        obj_in: schemas.LanguageDelete,
         current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.competences.soft_delete(db=db,uuid=obj_in.uuid)
+    crud.languages.soft_delete(db=db,uuid=obj_in.uuid)
     return schemas.Msg(message=__(key="competence-deleted-successfully"))
 
 
 
 
-@router.get("/get-my-competences", response_model=None)
-async def get_all_my_competences(
+@router.get("/get-my-language", response_model=None)
+async def get_all_my_languages(
         *,
         db: Session = Depends(get_db),
         page: int = 1,
@@ -77,9 +77,9 @@ async def get_all_my_competences(
         order: Optional[str] = Query(None, enum=["ASC", "DESC"]),
         keyword: Optional[str] = None,
         order_field: Optional[str] = None,  # Correction de order_filed → order_field
-        current_user: models.User = Depends(TokenRequired(roles=["CANDIDAT"]))
+        current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    return crud.competences.get_my_competences(
+    return crud.competences.get_all_my_languages(
         db=db,
         page=page,
         per_page=per_page,
@@ -90,12 +90,12 @@ async def get_all_my_competences(
 
     )
 
-@router.get("/get_competences_by /auth",response_model=List[schemas.CompetenceResponse])
-async def get_competence(
+@router.get("/get_languages",response_model=List[schemas.LanguageResponse])
+async def get_language(
     *,
     db: Session = Depends(get_db),
-    uuid:str,
+    candidat_uuid:str,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDAT"]))
 
 ):
-    return crud.competences.get_by_uuid(db=db,uuid=uuid)
+    return crud.languages.get_by_uuid(db=db,candidat_uuid=candidat_uuid)
