@@ -38,12 +38,10 @@ class CompetenceResponse(BaseModel):
 
 
 
-
-
 class CompetenceDelete(BaseModel):
     uuid:str
 
-class JobOffersResponseList(BaseModel):
+class CompetenceResponseList(BaseModel):
     total: int
     pages: int
     per_page: int

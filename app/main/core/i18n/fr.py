@@ -48,5 +48,7 @@ translation = {
     "user-created-successfully": "Utilisateur crée avec succès",
     "user-deleted-successfully": "Utilisateur supprimé avec succès",
     "user-status-updated-successfully": "Statut de l'utilisateur modifié avec succès",
+    "competence-created-successfully" : "compétence crée avec succès",
+    "competence-deleted-successfully" : "compétence supprimée avec succès",
 
 }

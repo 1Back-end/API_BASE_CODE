@@ -10,3 +10,5 @@ from .job_offers_crud import *
 from .candidates_crud import *
 from .application_crud import *
 from .notifications_crud import *
+from .competences_crud import *
+from .languages_crud import *
