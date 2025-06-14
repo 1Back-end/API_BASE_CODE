@@ -1,11 +1,10 @@
 from datetime import timedelta, datetime
 from typing import Any, Optional
-from fastapi import APIRouter, BackgroundTasks, Depends, Body, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.main.core.dependencies import get_db, TokenRequired
 from app.main import schemas, crud, models
 from app.main.core.i18n import __
-from app.main.core.config import Config
 from app.main.core.dependencies import TokenRequired
 
 router = APIRouter(prefix="/competences", tags=["competences"])
@@ -24,6 +23,8 @@ async def create_competences(
     )
     return schemas.Msg(message=__(key="competence-created-successfully"))
 
+
+
 @router.put("/update",response_model=schemas.Msg)
 def update_competence(
     *,
@@ -40,7 +41,7 @@ def update_competence(
     return schemas.Msg(message=__(key="competence-updated-successfully"))
 
 
-@router.delete("/delete/auth",response_model=schemas.Msg)
+@router.delete("/delete-drop",response_model=schemas.Msg)
 async def delete_competence(
     *,
     db: Session = Depends(get_db),
@@ -51,7 +52,10 @@ async def delete_competence(
     crud.competences.delete(db=db,competence=competence,uuid=competence.uuid)
     return schemas.Msg(message=__(key="competence-deleted-successfully"))
 
-@router.put("/soft_delete/auth", response_model=schemas.Msg)
+
+
+
+@router.put("/soft_delete", response_model=schemas.Msg)
 async def soft_delete_competence(
         *,
         db: Session = Depends(get_db),
@@ -60,6 +64,9 @@ async def soft_delete_competence(
 ):
     crud.competences.soft_delete(db=db,uuid=obj_in.uuid)
     return schemas.Msg(message=__(key="competence-deleted-successfully"))
+
+
+
 
 @router.get("/get-my-competences", response_model=None)
 async def get_all_my_competences(

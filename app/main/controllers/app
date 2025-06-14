@@ -1,0 +1,34 @@
+@router.get("/candidates/by-offer", response_model=schemas.ApplicationResponseList)
+def get_applications_by_offer(
+    job_offer_uuid: str = Query(..., description="UUID de l'offre d'emploi"),
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(TokenRequired(roles=["OWNER"])),
+    page: int = 1,
+    per_page: int = 30
+):
+    # Vérifie que l'offre appartient à l'utilisateur connecté
+    job_offer = db.query(models.JobOffer).filter(
+        models.JobOffer.uuid == job_offer_uuid,
+        models.JobOffer.added_by == current_user.uuid,
+        models.JobOffer.is_deleted == False
+    ).first()
+
+    if not job_offer:
+        raise HTTPException(status_code=403, detail=__(key="offer-not-found"))
+
+    # Récupère les candidatures liées à cette offre
+    record_query = db.query(models.Application).filter(
+        models.Application.job_offer_uuid == job_offer_uuid,
+        models.Application.is_deleted == False
+    )
+
+    total = record_query.count()
+    records = record_query.offset((page - 1) * per_page).limit(per_page).all()
+
+    return schemas.ApplicationResponseListSlim(
+        total=total,
+        pages=math.ceil(total / per_page),
+        per_page=per_page,
+        current_page=page,
+        data=records
+    )

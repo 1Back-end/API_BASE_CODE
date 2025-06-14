@@ -13,7 +13,7 @@ from app.main import models,schemas
 
 
 
-class CRUDcompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas.CompetenceUpdate]):
+class CRUDCompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas.CompetenceUpdate]):
 
     @classmethod
     def get_by_uuid(cls,db:Session,*,uuid:str):
@@ -119,4 +119,4 @@ class CRUDcompetence(CRUDBase[models.Competence,schemas.CompetenceCreate,schemas
         db.commit()
 
 
-competences = CRUDcompetence(models.Competence)
+competences = CRUDCompetence(models.Competence)
