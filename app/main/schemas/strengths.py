@@ -3,31 +3,28 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
-class CompetenceBase(BaseModel):
+class StrengthBase(BaseModel):
     title: str
     level: int
-    is_certified: Optional[bool] = None
     description: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
-class CompetenceCreate(CompetenceBase):
+class StrengthCreate(StrengthBase):
      pass
 
-class CompetenceUpdate(CompetenceBase):
+class StrengthUpdate(StrengthBase):
     uuid:str
     title: Optional[str] = None
     level: Optional[int] = None
-    is_certified: Optional[bool] = None
     description: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
-class CompetenceResponse(BaseModel):
+class StrengthResponse(BaseModel):
     uuid:str
     title: str
     level: int
-    is_certified: Optional[bool] = None
     description: Optional[str] = None
     date_added :datetime
     date_modified :Optional[datetime] = None
@@ -37,16 +34,15 @@ class CompetenceResponse(BaseModel):
 
 
 
-
-class CompetenceDelete(BaseModel):
+class StrengthDelete(BaseModel):
     uuid:str
 
-class CompetenceResponseList(BaseModel):
+class StrengthResponseList(BaseModel):
     total: int
     pages: int
     per_page: int
     current_page:int
-    data: list[CompetenceResponse]
+    data: list[StrengthResponse]
 
     model_config = ConfigDict(from_attributes=True)
 

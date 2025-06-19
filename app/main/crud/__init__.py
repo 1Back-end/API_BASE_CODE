@@ -12,4 +12,7 @@ from .application_crud import *
 from .notifications_crud import *
 from .competences_crud import *
 from .languages_crud import *
+from .strengths_crud import *
+from .hobbies_crud import*
+from .personals_crud import *
 

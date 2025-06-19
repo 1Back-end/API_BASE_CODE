@@ -11,6 +11,10 @@ from .candidates_controller import router as candidates
 from .application_controller import router as application 
 from .competences_controller import router as competences
 from .languages_controller import router as languages
+from .strengths_controller import router as strengths 
+from .hobbies_controller import router as hobbies
+from .personal_controller import router as personals
+
 
 api_router = APIRouter()
 
@@ -27,3 +31,6 @@ api_router.include_router(application)
 # api_router.include_router(notifications)
 api_router.include_router(competences)
 api_router.include_router(languages)
+api_router.include_router(strengths)
+api_router.include_router(hobbies)
+api_router.include_router(personals)

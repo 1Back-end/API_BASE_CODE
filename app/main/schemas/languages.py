@@ -3,9 +3,12 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 
+from app.main.models.languages import LanguageType
+
 class LanguageBase(BaseModel):
     title: str
-    level: int
+    level: str
+    is_certified: Optional[bool] = None
     description: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -16,7 +19,8 @@ class LanguageCreate(LanguageBase):
 class LanguageUpdate(LanguageBase):
     uuid:str
     title: Optional[str] = None
-    level: Optional[int] = None
+    level: Optional[str] = None
+    is_certified: Optional[bool] = None
     description: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -24,7 +28,8 @@ class LanguageUpdate(LanguageBase):
 class LanguageResponse(BaseModel):
     uuid:str
     title: str
-    level: int 
+    level: str 
+    is_certified: Optional[bool] = None
     description: Optional[str] = None
     date_added :datetime
     date_modified :Optional[datetime] = None

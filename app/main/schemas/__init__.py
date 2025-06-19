@@ -12,3 +12,6 @@ from .candidates import *
 from .applications import *
 from .competences import *
 from .languages import * 
+from .strengths import * 
+from .hobbies import *
+from .personals import*

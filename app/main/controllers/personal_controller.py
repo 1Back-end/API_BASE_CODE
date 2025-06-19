@@ -7,69 +7,69 @@ from app.main import schemas, crud, models
 from app.main.core.i18n import __
 from app.main.core.dependencies import TokenRequired
 
-router = APIRouter(prefix="/languages", tags=["languages"])
+router = APIRouter(prefix="/personals", tags=["personals"])
 
 @router.post("/create",response_model=schemas.Msg)
-async def create_language(
+async def create_personal(
     *,
     db: Session = Depends(get_db),
-    language:schemas.LanguageCreate,
+    personal:schemas.PersonalCreate,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.languages.create(
+    crud.personals.create(
         db=db,
-        language=language,
+        obj_in=personal,
         candidate_uuid=current_user.uuid
     )
-    return schemas.Msg(message=__(key="language-added-successfully"))
+    return schemas.Msg(message=__(key="personal-information-created-successfully"))
 
 
 
 @router.put("/update",response_model=schemas.Msg)
-def update_language(
+def update_personal(
     *,
     db: Session = Depends(get_db),
-    language:schemas.LanguageUpdate,
+    personal:schemas.PersonalUpdate,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.languages.update(
+    crud.personals.update(
         db=db,
-        language=language,
+        personal=personal,
         candidate_uuid=current_user.uuid  
     )
 
-    return schemas.Msg(message=__(key="language-updated-successfully"))
+    return schemas.Msg(message=__(key="personal-information-updated-successfully"))
 
 
 @router.delete("/delete-drop",response_model=schemas.Msg)
-async def delete_language(
+async def delete_personal(
     *,
     db: Session = Depends(get_db),
-    language:schemas.LanguageDelete,
+    personal:schemas.PersonalDelete,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
     
 ):
-    crud.languages.delete(db=db,uuid=language.uuid)
-    return schemas.Msg(message=__(key="language-deleted-successfully"))
+    crud.personals.delete(db=db,uuid=personal.uuid)
+    return schemas.Msg(message=__(key="personal-information-deleted-successfully"))
 
 
 
 
 @router.put("/soft_delete", response_model=schemas.Msg)
-async def soft_delete_language(
+async def soft_delete_personal(
         *,
         db: Session = Depends(get_db),
-        obj_in: schemas.LanguageDelete,
+        obj_in: schemas.PersonalDelete,
         current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.languages.soft_delete(db=db,uuid=obj_in.uuid)
-    return schemas.Msg(message=__(key="language-deleted-successfully"))
+    crud.personals.soft_delete(db=db,uuid=obj_in.uuid)
+    return schemas.Msg(message=__(key="personal-information-deleted-successfully"))
 
 
 
 
-@router.get("/get-my-languages", response_model=None)
-async def get_all_my_languages(
+@router.get("/get-my-personals", response_model=None)
+async def get_all_my_personals(
         *,
         db: Session = Depends(get_db),
         page: int = 1,
@@ -79,7 +79,7 @@ async def get_all_my_languages(
         order_field: Optional[str] = None,  # Correction de order_filed → order_field
         current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    return crud.competences.get_all_my_languages(
+    return crud.personals.get_my_personals(
         db=db,
         page=page,
         per_page=per_page,
@@ -90,12 +90,16 @@ async def get_all_my_languages(
 
     )
 
-@router.get("/get_languages",response_model=List[schemas.LanguageResponse])
-async def get_language(
+@router.get("/get_personals_by_uuid",response_model=schemas.PersonalResponse)
+async def get_personal(
     *,
     db: Session = Depends(get_db),
-    candidat_uuid:str,
-    current_user: models.User = Depends(TokenRequired(roles=["CANDIDAT"]))
+    uuid:str,
+    current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 
 ):
-    return crud.languages.get_by_uuid(db=db,candidat_uuid=candidat_uuid)
+   
+    data = crud.personals.get_by_uuid(db=db,uuid=uuid)
+    if data is None:
+        raise HTTPException(status_code=404,detail=__(key="personal-information-not-found"))
+    return data

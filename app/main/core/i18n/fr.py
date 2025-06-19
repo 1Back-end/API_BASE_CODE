@@ -49,6 +49,29 @@ translation = {
     "user-deleted-successfully": "Utilisateur supprimé avec succès",
     "user-status-updated-successfully": "Statut de l'utilisateur modifié avec succès",
     "competence-created-successfully" : "compétence crée avec succès",
+    "competence-updated-successfully" : "compétence modifiée avec succès",
     "competence-deleted-successfully" : "compétence supprimée avec succès",
+    "competence-not-found" : "compétence non trouvée",
+    "personal-information-created-successfully" : "information personnelle crée avec succès ",
+    "personal-information-updated-successfully" : "information personnelle modifiée avec succès",
+    "personal-information-deleted-successfully" : "information personnelle supprimée avec succès ",
+    "personal-information-not-found" : "information personnelle non trouvée",
+    "strength-not-found" : "Qualité non trouvée",
+    "strength-created-successfully" : "Qualité crée avec succès",
+    "strength-updated-successfully" : "Qualité modifiée avec succès",
+    "strength-deleted-successfully" : "Qualité supprimée avec succès",
+    "hobby-not-found" : "loisir non trouvée",
+    "hobby-created-successfully" : "loisir crée avec succès",
+    "hobby-updated-successfully" : "loisir modifiée avec succès",
+    "hobby-deleted-successfully" : "loisir supprimée avec succès",
+    "language-created-successfully" : "langue ajoutée avec succès",
+    "language-updated-successfully"  : "langue modifiée avec succès",
+    "language-deleted-successfully" : "langue supprimée avec succes",
+    "language-not-found" : "langue non trouvée",
+
+
+    
 
 }
+
+

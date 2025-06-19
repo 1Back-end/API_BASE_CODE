@@ -29,6 +29,7 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
             uuid = str(uuid.uuid4()),
             title = language.title,
             level = language.level,
+            is_certified = language.is_certified,
             description=language.description,
             candidate_uuid = candidate_uuid
             
@@ -47,6 +48,7 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
 
         db_obj.title = language.title if language.title else db_obj.title
         db_obj.level = language.level if language.level else db_obj.level
+        db_obj.is_certified = language.is_certified if language.is_certified else db_obj.is_certified
         db_obj.description = language.description if language.description else db_obj.description
         db_obj.candidate_uuid = candidate_uuid
         db.commit()
@@ -55,6 +57,7 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
 
     @classmethod
     def get_my_languages(
+            cls,
             *,
             db: Session,
             page: int = 1,
@@ -105,7 +108,7 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
         language = cls.get_by_uuid(db=db,uuid=uuid)
         if not language:
             raise HTTPException(status_code=404,detail=__(key="language-not-found"))
-        db.delete()
+        db.delete(language)
         db.commit()
 
     @classmethod
@@ -115,6 +118,7 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
             raise HTTPException(status_code=404, detail=__("language-not-found"))
         language.is_deleted = True
         db.commit()
+
 
 
 languages = CRUDLanguage(models.Language)

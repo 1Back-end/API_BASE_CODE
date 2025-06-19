@@ -22,6 +22,10 @@ class Candidat(Base):
     experiences = relationship("Experience", back_populates="candidate", cascade="all, delete-orphan")
     diplomas = relationship("Diploma", back_populates="candidate", cascade="all, delete-orphan")
     competences = relationship("Competence", back_populates="candidate", cascade="all, delete-orphan")
+    languages = relationship("Language", back_populates="candidate", cascade="all, delete-orphan")
+    hobbies = relationship("Hobby", back_populates="candidate", cascade="all, delete-orphan")
+    strengths = relationship("Strength", back_populates="candidate", cascade="all, delete-orphan")
+    personals = relationship("Personal", back_populates="candidate", cascade="all, delete-orphan")
 
 
     date_added = Column(DateTime, nullable=False, default=datetime.now())
