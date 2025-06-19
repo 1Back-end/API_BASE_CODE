@@ -21,6 +21,7 @@ class CandidateSlim(BaseModel):
     last_name: str
     email: EmailStr
     phone_number: str
+    avatar:Optional[FileSlim1]=None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -93,6 +94,15 @@ class ExperenciesSlim(BaseModel):
     date_modified : Optional[datetime]
     model_config = ConfigDict(from_attributes=True)
 
+class CompetenceSlim(BaseModel):
+    title: str
+    level: int
+    is_certified: Optional[bool] = None
+    description: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 
 class ExperenciesCreate(ExperenciesBase):
     pass
@@ -153,3 +163,24 @@ class CandidateResponseList(BaseModel):
     data: list[Candidate]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+
+
+class AllCandidate(CandidateSlim):
+    uuid: str
+    diplomas: List[DiplomasBase] = []
+    experiences : List[ExperenciesBase] = []
+    competences : List[CompetenceSlim] = []
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AllCandidateResponseList(BaseModel):
+    total: int
+    pages: int
+    per_page: int
+    current_page:int
+    data: list[AllCandidate]
+
+    model_config = ConfigDict(from_attributes=True)
+

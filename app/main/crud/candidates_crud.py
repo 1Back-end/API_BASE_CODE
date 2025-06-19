@@ -301,7 +301,56 @@ class CRUDCandidat(CRUDBase[models.Candidat,schemas.CandidateBase,schemas.Candid
             current_page=page,
             data=record_query
         )
-    
+
+
+    @classmethod
+    def get_all_candidates(
+            cls,
+            *,
+            db: Session,
+            page: int = 1,
+            per_page: int = 30,
+            order: Optional[str] = None,
+            order_field: Optional[str] = None,
+            keyword: Optional[str] = None,
+    ):
+
+        if page < 1:
+            page = 1
+
+        record_query = db.query(models.Candidat).filter(models.Candidat.is_deleted==False)
+
+        if keyword:
+            record_query = record_query.filter(
+                or_(
+                    models.Candidat.first_name.ilike(f'%{keyword}%'),
+                    models.Candidat.last_name.ilike(f'%{keyword}%'),
+                    models.Candidat.email.ilike(f'%{keyword}%'),
+                    models.Candidat.phone_number.ilike(f'%{keyword}%'),
+                    models.Candidat.civility.ilike(f'%{keyword}%'),
+                )
+            )
+
+        if order and order_field and hasattr(models.Candidat, order_field):
+            if order == "asc":
+                record_query = record_query.order_by(getattr(models.Candidat, order_field).asc())
+            else:
+                record_query = record_query.order_by(getattr(models.Candidat, order_field).desc())
+
+        total = record_query.count()
+
+        record_query = record_query.offset((page - 1) * per_page).limit(per_page).all()
+
+        return schemas.AllCandidateResponseList(
+            total=total,
+            pages=math.ceil(total / per_page),
+            per_page=per_page,
+            current_page=page,
+            data=record_query
+        )
+
+
+
 
 
 
