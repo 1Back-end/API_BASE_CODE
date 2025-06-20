@@ -28,10 +28,7 @@ class LanguageResponse(BaseModel):
     description: Optional[str] = None
     date_added :datetime
     date_modified :Optional[datetime] = None
-
-   
     model_config = ConfigDict(from_attributes=True)
-
 
 
 

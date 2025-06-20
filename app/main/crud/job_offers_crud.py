@@ -47,16 +47,16 @@ class CRUDJobOffers(CRUDBase[models.JobOffer,schemas.JobOffersCreate,schemas.Job
         db.commit()
         db.refresh(offers)
         # Récupérer tous les candidats inscrits dans le système
-        candidates = db.query(models.Candidat).filter(models.Candidat.is_deleted==False).all()
+        #candidates = db.query(models.Candidat).filter(models.Candidat.is_deleted==False).all()
         
-        for candidate in candidates:
-            background_tasks.add_task(
-                send_notification_to_candidate, 
-                email=candidate.email, 
-                name=f"{candidate.first_name} {candidate.last_name}", 
-                job_title=offers.title, 
-                job_description=offers.description
-            )
+        #for candidate in candidates:
+            #background_tasks.add_task(
+                #send_notification_to_candidate,
+                #email=candidate.email,
+                #name=f"{candidate.first_name} {candidate.last_name}",
+                ###job_title=offers.title,
+                #job_description=offers.description
+            #)
         # Retourner l'offre créée
         return offers
     

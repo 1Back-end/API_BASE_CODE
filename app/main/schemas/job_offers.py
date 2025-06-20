@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel,EmailStr,ConfigDict
-from typing import Optional
+from typing import Optional, List
 from app.main.models.job_offers import ContractType, WorkMode
 from app.main.schemas.user import AddedBy
 
@@ -49,6 +49,28 @@ class JobOffersResponse(BaseModel):
     status:str
     model_config = ConfigDict(from_attributes=True)
 
+
+class CompanySlim(BaseModel):
+    uuid: str
+    name: str
+    email: str
+    phone: str
+    description: Optional[str] = None
+    slogan: Optional[str] = None
+    website: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AddedByCompany(BaseModel):
+    uuid: str
+    email: EmailStr
+    first_name: str
+    last_name: str
+    phone_number: Optional[str] = None
+    company: Optional[List[CompanySlim]] = None
+
+    model_config = ConfigDict(from_attributes=True)
 class JobOffersResponseSlim1(BaseModel):
     uuid:str
     title:str
@@ -61,7 +83,7 @@ class JobOffersResponseSlim1(BaseModel):
     contact_email:EmailStr
     created_at:datetime
     updated_at:datetime
-    owner:Optional[AddedBy]=None
+    owner:Optional[AddedByCompany]=None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -82,6 +104,9 @@ class JobOffersResponseList(BaseModel):
     data: list[JobOffersResponse]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+
 
 
 class JobOffersResponseListSlim1(BaseModel):

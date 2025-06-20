@@ -68,8 +68,12 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
         if page < 1:
             page = 1
 
+        record_query = db.query(models.Language).filter(models.Language.is_deleted == False,models.Language.candidate_uuid==candidate_uuid)
 
+<<<<<<< Updated upstream
         record_query = db.query(models.Language).filter(models.Language,models.Competence.is_deleted == False)
+=======
+>>>>>>> Stashed changes
         if keyword:
 
                 record_query = record_query.filter(
@@ -78,9 +82,6 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
                         models.Competence.level.ilike(f'%{keyword}%'),
                     )
                 )
-    
-            
-
         if order and order_field and hasattr(models.languages, order_field):
             if order == "asc":
                 record_query = record_query.order_by(getattr(models.Competence, order_field).asc())
