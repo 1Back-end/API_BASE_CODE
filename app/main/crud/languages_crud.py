@@ -72,7 +72,7 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
             page = 1
 
 
-        record_query = db.query(models.Language).filter(models.Language,models.Language.is_deleted == False)
+        record_query = db.query(models.Language).filter(models.Language.is_deleted == False)
         if keyword:
 
                 record_query = record_query.filter(

@@ -7,69 +7,69 @@ from app.main import schemas, crud, models
 from app.main.core.i18n import __
 from app.main.core.dependencies import TokenRequired
 
-router = APIRouter(prefix="/languages", tags=["languages"])
+router = APIRouter(prefix="/medias", tags=["medias"])
 
 @router.post("/create",response_model=schemas.Msg)
-async def create_language(
+async def create_media(
     *,
     db: Session = Depends(get_db),
-    language:schemas.LanguageCreate,
+    media:schemas.MediaCreate,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.languages.create(
+    crud.medias.create(
         db=db,
-        language=language,
+        obj_in=media,
         candidate_uuid=current_user.uuid
     )
-    return schemas.Msg(message=__(key="language-added-successfully"))
+    return schemas.Msg(message=__(key="social-media-added-successfully"))
 
 
 
 @router.put("/update",response_model=schemas.Msg)
-def update_language(
+def update_media(
     *,
     db: Session = Depends(get_db),
-    language:schemas.LanguageUpdate,
+    media:schemas.MediaUpdate,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.languages.update(
+    crud.medias.update(
         db=db,
-        language=language,
+        media=media,
         candidate_uuid=current_user.uuid  
     )
 
-    return schemas.Msg(message=__(key="language-updated-successfully"))
+    return schemas.Msg(message=__(key="social-media-updated-successfully"))
 
 
 @router.delete("/delete-drop",response_model=schemas.Msg)
-async def delete_language(
+async def delete_media(
     *,
     db: Session = Depends(get_db),
-    language:schemas.LanguageDelete,
+    media:schemas.MediaDelete,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
     
 ):
-    crud.languages.delete(db=db,uuid=language.uuid)
-    return schemas.Msg(message=__(key="language-deleted-successfully"))
+    crud.medias.delete(db=db,uuid=media.uuid)
+    return schemas.Msg(message=__(key="social-media-deleted-successfully"))
 
 
 
 
 @router.put("/soft_delete", response_model=schemas.Msg)
-async def soft_delete_language(
+async def soft_delete_media(
         *,
         db: Session = Depends(get_db),
-        obj_in: schemas.LanguageDelete,
+        obj_in: schemas.MediaDelete,
         current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.languages.soft_delete(db=db,uuid=obj_in.uuid)
-    return schemas.Msg(message=__(key="language-deleted-successfully"))
+    crud.medias.soft_delete(db=db,uuid=obj_in.uuid)
+    return schemas.Msg(message=__(key="media-social-deleted-successfully"))
 
 
 
 
-@router.get("/get-my-languages", response_model=None)
-async def get_all_my_languages(
+@router.get("/get-my-medias", response_model=None)
+async def get_all_my_medias(
         *,
         db: Session = Depends(get_db),
         page: int = 1,
@@ -79,7 +79,7 @@ async def get_all_my_languages(
         order_field: Optional[str] = None,  # Correction de order_filed → order_field
         current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    return crud.languages.get_my_languages(
+    return crud.medias.get_my_medias(
         db=db,
         page=page,
         per_page=per_page,
@@ -90,15 +90,16 @@ async def get_all_my_languages(
 
     )
 
-@router.get("/get_languages_by_uuid",response_model=schemas.LanguageResponse)
-async def get_language(
+@router.get("/get_medias_by_uuid",response_model=schemas.MediaResponse)
+async def get_media(
     *,
     db: Session = Depends(get_db),
     uuid:str,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 
 ):
-    data = crud.languages.get_by_uuid(db=db,uuid=uuid)
+   
+    data = crud.medias.get_by_uuid(db=db,uuid=uuid)
     if data is None:
-        raise HTTPException(status_code=404,detail=__(key="language-not-found"))
+        raise HTTPException(status_code=404,detail=__(key="social-media-not-found"))
     return data

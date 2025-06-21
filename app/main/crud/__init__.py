@@ -15,4 +15,5 @@ from .languages_crud import *
 from .strengths_crud import *
 from .hobbies_crud import*
 from .personals_crud import *
+from .medias_crud import *
 

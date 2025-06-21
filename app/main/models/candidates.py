@@ -26,7 +26,7 @@ class Candidat(Base):
     hobbies = relationship("Hobby", back_populates="candidate", cascade="all, delete-orphan")
     strengths = relationship("Strength", back_populates="candidate", cascade="all, delete-orphan")
     personals = relationship("Personal", back_populates="candidate", cascade="all, delete-orphan")
-
+    medias = relationship("Media", back_populates="candidate", cascade="all, delete-orphan")
 
     date_added = Column(DateTime, nullable=False, default=datetime.now())
     date_modified = Column(DateTime, nullable=False, default=datetime.now())

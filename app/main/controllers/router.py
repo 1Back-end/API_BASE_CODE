@@ -14,6 +14,7 @@ from .languages_controller import router as languages
 from .strengths_controller import router as strengths 
 from .hobbies_controller import router as hobbies
 from .personal_controller import router as personals
+from .medias_controller import router as medias
 
 
 api_router = APIRouter()
@@ -34,3 +35,4 @@ api_router.include_router(languages)
 api_router.include_router(strengths)
 api_router.include_router(hobbies)
 api_router.include_router(personals)
+api_router.include_router(medias)
