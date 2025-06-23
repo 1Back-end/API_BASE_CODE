@@ -1,9 +1,8 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, date
 
 from app.main.schemas.file import FileSlim1
-
 
 # --- Candidate Models ---
 class CandidateBase(BaseModel):
@@ -14,7 +13,6 @@ class CandidateBase(BaseModel):
     phone_number: str
     password: str
 
-
 class CandidateSlim(BaseModel):
     civility: str
     first_name: str
@@ -24,13 +22,8 @@ class CandidateSlim(BaseModel):
     avatar:Optional[FileSlim1]=None
     model_config = ConfigDict(from_attributes=True)
 
-
-
 class CandidateCreate(CandidateBase):
     pass
-
-
-
 
 class DiplomasBase(BaseModel):
     degree_name:str
@@ -43,8 +36,6 @@ class DiplomasBase(BaseModel):
 class DiplomaCreate(DiplomasBase):
     pass
 
-
-
 class DiplomasSlim(BaseModel):
     uuid:str
     degree_name:str
@@ -56,7 +47,6 @@ class DiplomasSlim(BaseModel):
     date_added:datetime
     date_modified : Optional[datetime]
     model_config = ConfigDict(from_attributes=True)
-
 
 
 class DiplomaUpdate(BaseModel):
@@ -145,7 +135,32 @@ class ExperiencesResponseList(BaseModel):
 
 
 
+class LanguageSlim(BaseModel):
+    uuid: str
+    title: str
+    level: str
+    is_certified: Optional[bool] = None
+    model_config = ConfigDict(from_attributes=True)
 
+class HobbySlim(BaseModel):
+    uuid: str
+    title: str
+    description: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+class PersonnalInformationSlim(BaseModel):
+    gender: Optional[str] = None
+    professional_title: Optional[str] = None
+    title_description: Optional[str] = None
+    birth_date: Optional[date] = None
+    place_of_birth: Optional[str] = None
+    region_of_origin: Optional[str] = None
+    adress: Optional[str] = None
+    nationality: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    others: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Candidate(CandidateSlim):
@@ -172,6 +187,9 @@ class AllCandidate(CandidateSlim):
     diplomas: List[DiplomasBase] = []
     experiences : List[ExperenciesBase] = []
     competences : List[CompetenceSlim] = []
+    languages : List[LanguageSlim] = []
+    hobbies : List[HobbySlim] = []
+    personals : List[PersonnalInformationSlim] = []
     model_config = ConfigDict(from_attributes=True)
 
 

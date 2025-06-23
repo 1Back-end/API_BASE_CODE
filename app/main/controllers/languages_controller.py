@@ -79,7 +79,7 @@ async def get_all_my_languages(
         order_field: Optional[str] = None,  # Correction de order_filed → order_field
         current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    return crud.competences.get_all_my_languages(
+    return crud.languages.get_my_languages(
         db=db,
         page=page,
         per_page=per_page,
@@ -90,12 +90,11 @@ async def get_all_my_languages(
 
     )
 
-@router.get("/get_languages",response_model=List[schemas.LanguageResponse])
+@router.get("/get_languages_by_uuid",response_model=schemas.LanguageResponse)
 async def get_language(
     *,
     db: Session = Depends(get_db),
-    candidat_uuid:str,
-    current_user: models.User = Depends(TokenRequired(roles=["CANDIDAT"]))
-
+    uuid:str,
+    current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    return crud.languages.get_by_uuid(db=db,candidat_uuid=candidat_uuid)
+    return crud.languages.get_by_uuid(db=db,uuid=uuid)

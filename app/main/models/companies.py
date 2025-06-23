@@ -44,7 +44,7 @@ class Company(Base):
     website = Column(String, nullable=True)
 
     added_by = Column(String, ForeignKey("users.uuid"), nullable=False)  # Référence au propriétaire
-    owner = relationship("User", foreign_keys=[added_by])
+    owner = relationship("User", foreign_keys=[added_by],back_populates="company")
 
     is_deleted = Column(Boolean, default=False)
 

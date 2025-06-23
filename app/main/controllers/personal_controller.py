@@ -9,20 +9,19 @@ from app.main.core.dependencies import TokenRequired
 
 router = APIRouter(prefix="/personals", tags=["personals"])
 
-@router.post("/create",response_model=schemas.Msg)
-async def create_personal(
+@router.post("/save", response_model=schemas.Msg)
+async def save_personal(
     *,
     db: Session = Depends(get_db),
-    personal:schemas.PersonalCreate,
+    personal: schemas.PersonalCreate,
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
-    crud.personals.create(
+    crud.personals.create_or_update(
         db=db,
         obj_in=personal,
         candidate_uuid=current_user.uuid
     )
-    return schemas.Msg(message=__(key="personal-information-created-successfully"))
-
+    return schemas.Msg(message=__(key="personal-information-saved"))
 
 
 @router.put("/update",response_model=schemas.Msg)
@@ -98,8 +97,19 @@ async def get_personal(
     current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 
 ):
-   
     data = crud.personals.get_by_uuid(db=db,uuid=uuid)
     if data is None:
         raise HTTPException(status_code=404,detail=__(key="personal-information-not-found"))
+    return data
+
+
+
+@router.get("/get_personals_by_candidat_uuid", response_model=schemas.PersonalResponse)
+async def get_personal_candidate(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
+):
+    data = crud.personals.get_by_candidat_uuid(db=db, candidat_uuid=current_user.uuid)
+    if data is None:
+        raise HTTPException(status_code=404, detail="Aucune information personnelle trouvée")
     return data

@@ -17,30 +17,34 @@ class CRUDPersonal(CRUDBase[models.Personal, schemas.PersonalCreate, schemas.Per
         return db.query(models.Personal).filter(models.Personal.uuid == uuid, models.Personal.is_deleted == False).first()
 
     @classmethod
+    def get_by_candidat_uuid(cls, db: Session, candidat_uuid: str):
+        return db.query(models.Personal).filter(models.Personal.candidate_uuid == candidat_uuid,models.Personal.is_deleted == False).first()
+
+    @classmethod
     def get_by_candidate_uuid(cls, db: Session, candidate_uuid: str):
         return db.query(models.Personal).filter(models.Personal.candidate_uuid == candidate_uuid, models.Personal.is_deleted == False).first()
 
     @classmethod
-    def create(cls, db: Session, *, obj_in: schemas.PersonalCreate, candidate_uuid: str):
-        new_personal = models.Personal(
-            uuid = str(uuid.uuid4()),
-            gender=obj_in.gender,
-            professional_title=obj_in.professional_title,
-            title_description=obj_in.title_description,
-            birth_date=obj_in.birth_date,
-            place_of_birth=obj_in.place_of_birth,
-            region_of_origin=obj_in.region_of_origin,
-            adress=obj_in.adress,
-            nationality=obj_in.nationality,
-            city=obj_in.city,
-            country=obj_in.country,
-            others=obj_in.others,
-            candidate_uuid=candidate_uuid
-        )
-        db.add(new_personal)
-        db.commit()
-        db.refresh(new_personal)
-        return new_personal
+    def create_or_update(cls, db: Session, *, obj_in: schemas.PersonalCreate, candidate_uuid: str):
+        existing = db.query(models.Personal).filter_by(candidate_uuid=candidate_uuid).first()
+
+        if existing:
+            for field, value in obj_in.dict().items():
+                setattr(existing, field, value)
+            db.commit()
+            db.refresh(existing)
+            return existing
+        else:
+            new_personal = models.Personal(
+                uuid=str(uuid.uuid4()),
+                candidate_uuid=candidate_uuid,
+                **obj_in.dict()
+            )
+            db.add(new_personal)
+            db.commit()
+            db.refresh(new_personal)
+            return new_personal
+
 
     @classmethod
     def update(cls,db:Session,*,personal:schemas.PersonalUpdate,candidate_uuid:str):

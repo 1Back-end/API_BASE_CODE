@@ -45,6 +45,7 @@ class JobOffer(Base):
     work_mode = Column(String,nullable=False, default=WorkMode.full_time)  # Mode de travail (enum)
     contact_email = Column(String, nullable=False)  # Email de contact
     is_deleted = Column(Boolean,default=False)
+
     added_by = Column(String, ForeignKey("users.uuid"), nullable=True)  # Référence au propriétaire
     owner = relationship("User", foreign_keys=[added_by])
 
