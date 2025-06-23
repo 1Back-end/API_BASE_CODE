@@ -1,24 +1,29 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, EmailStr
-from datetime import datetime
-
+from datetime import datetime, date
 
 from app.main.models.personals import GenderEnum
 
 class PersonalBase(BaseModel):
-    gender: GenderEnum
-    professional_title: str
+    gender: Optional[str]=None
+    professional_title: Optional[str] = None
     title_description: Optional[str] = None
-    birth_date: datetime
-    place_of_birth: str
-    region_of_origin: str
-    adress: str
-    nationality: str
-    city: str
-    country: str
+    birth_date: Optional[date] = None
+    place_of_birth: Optional[str] = None
+    region_of_origin: Optional[str] = None
+    adress: Optional[str] = None
+    nationality: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
     others: Optional[str] = None
-    
+
+    @field_validator('birth_date', mode='before')
+    @classmethod
+    def parse_empty_date(cls, value):
+        if value == "":
+            return None
+        return value
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -43,19 +48,19 @@ class PersonalUpdate(PersonalBase):
 
 class PersonalResponse(BaseModel):
     uuid:str
-    gender: GenderEnum
-    professional_title: str
+    gender: Optional[str]=None
+    professional_title: Optional[str]=None
     title_description: Optional[str] = None
-    birth_date: datetime
-    place_of_birth: str
-    region_of_origin: str
-    adress: str
-    nationality: str
-    city: str
-    country: str
+    birth_date: Optional[date]=None
+    place_of_birth: Optional[str]=None
+    region_of_origin: Optional[str]=None
+    adress: Optional[str]=None
+    nationality: Optional[str]=None
+    city: Optional[str]=None
+    country: Optional[str]=None
     others: Optional[str] = None
     
-    date_added :datetime
+    date_added :Optional[datetime]=None
     date_modified :Optional[datetime] = None
 
    

@@ -3,6 +3,16 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
+
+
+class CompetenceSlim(BaseModel):
+    title: str
+    level: int
+    is_certified: Optional[bool] = None
+    description: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 class CompetenceBase(BaseModel):
     title: str
     level: int

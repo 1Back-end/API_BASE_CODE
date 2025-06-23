@@ -77,7 +77,7 @@ async def get_all_my_competences(
         order: Optional[str] = Query(None, enum=["ASC", "DESC"]),
         keyword: Optional[str] = None,
         order_field: Optional[str] = None,  # Correction de order_filed → order_field
-        current_user: models.User = Depends(TokenRequired(roles=["CANDIDAT"]))
+        current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
     return crud.competences.get_my_competences(
         db=db,

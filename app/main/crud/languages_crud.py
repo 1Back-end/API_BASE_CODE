@@ -71,6 +71,7 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
         if page < 1:
             page = 1
 
+        record_query = db.query(models.Language).filter(models.Language.is_deleted == False,models.Language.candidate_uuid==candidate_uuid)
 
         record_query = db.query(models.Language).filter(models.Language.is_deleted == False)
         if keyword:
@@ -81,9 +82,6 @@ class CRUDLanguage(CRUDBase[models.Language,schemas.LanguageCreate,schemas.Langu
                         models.Language.level.ilike(f'%{keyword}%'),
                     )
                 )
-    
-            
-
         if order and order_field and hasattr(models.languages, order_field):
             if order == "asc":
                 record_query = record_query.order_by(getattr(models.Language, order_field).asc())

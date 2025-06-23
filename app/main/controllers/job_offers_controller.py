@@ -74,14 +74,14 @@ async def get_many_offers(
     page: int = 1,
     per_page: int = 30,
     order: str = Query(None, enum=["ASC", "DESC"]),
-    status: str = Query(..., enum=[st.value for st in models.JobStatus]),
-    work_mode: str = Query(..., enum=[st.value for st in models.WorkMode]),
-    employment_type: str = Query(..., enum=[st.value for st in models.ContractType]),
+    status: str = Query(None, enum=[st.value for st in models.JobStatus]),
+    work_mode: str = Query(None, enum=[st.value for st in models.WorkMode]),
+    employment_type: str = Query(None, enum=[st.value for st in models.ContractType]),
     keyword: Optional[str] = None,
     order_field: Optional[str] = None,
-    current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
+    #current_user: models.User = Depends(TokenRequired(roles=["OWNER"]))
 ):
-    return crud.offers.get_multi(
+    return crud.offers.get_many(
         db=db,
         page=page,
         per_page=per_page,

@@ -207,3 +207,25 @@ async def get_many_candidate(
         keyword=keyword,
 
     )
+
+
+
+@router.get("/get_all_candidates-for_website", response_model=None)
+async def get_many_candidate_for_website(
+    *,
+    db: Session = Depends(get_db),
+    page: int = 1,
+    per_page: int = 30,
+    order: str = Query(None, enum=["ASC", "DESC"]),
+    keyword: Optional[str] = None,
+    order_field: Optional[str] = None,  # Correction de order_filed → order_field
+):
+    return crud.candidate.get_all_candidates(
+        db=db,
+        page=page,
+        per_page=per_page,
+        order=order,
+        order_field=order_field,  # Correction ici aussi
+        keyword=keyword,
+
+    )
