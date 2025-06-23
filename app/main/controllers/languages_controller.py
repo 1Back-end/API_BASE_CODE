@@ -80,7 +80,6 @@ async def get_all_my_languages(
         current_user: models.User = Depends(TokenRequired(roles=["CANDIDATE"]))
 ):
     return crud.languages.get_my_languages(
-    return crud.languages.get_my_languages(
         db=db,
         page=page,
         per_page=per_page,
@@ -91,7 +90,6 @@ async def get_all_my_languages(
 
     )
 
-@router.get("/get_languages_by_uuid",response_model=schemas.LanguageResponse)
 @router.get("/get_languages_by_uuid",response_model=schemas.LanguageResponse)
 async def get_language(
     *,
